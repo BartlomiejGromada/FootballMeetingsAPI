@@ -6,6 +6,7 @@ public class FootballMatch
     public string Name { get; set; }
     public int? MaxNumberOfPlayers { get; set; }
     public bool IsActive { get; set; }
+    public DateTime Date { get; set; }
 
     public virtual ICollection<User> Players { get; set; }
     public virtual FootballPitch FootballPitch { get; set; }
