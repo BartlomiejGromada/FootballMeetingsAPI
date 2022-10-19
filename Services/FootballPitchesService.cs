@@ -20,14 +20,16 @@ public sealed class FootballPitchesService : IFootballPitchesService
 
     public async Task<List<FootballPitchDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var footballPitches = await _repositoryManager.FootballPitchesRepository.GetAllAsync(cancellationToken);
+        var footballPitches = await _repositoryManager.FootballPitchesRepository
+            .GetAllAsync(cancellationToken);
 
         return _mapper.Map<List<FootballPitchDto>>(footballPitches);
     }
 
     public async Task<FootballPitchDto> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
     {
-       var footballPitch = await _repositoryManager.FootballPitchesRepository.GetByIdAsync(footballPitchId, cancellationToken);
+       var footballPitch = await _repositoryManager.FootballPitchesRepository
+            .GetByIdAsync(footballPitchId, cancellationToken);
     
        if(footballPitch is null)
         {
@@ -40,7 +42,9 @@ public sealed class FootballPitchesService : IFootballPitchesService
     public async Task<FootballPitchDto> AddAsync(AddFootballPitchDto dto, CancellationToken cancellationToken = default)
     {
         var footballPitch = _mapper.Map<FootballPitch>(dto);
-        await _repositoryManager.FootballPitchesRepository.AddAsync(footballPitch);
+
+        await _repositoryManager.FootballPitchesRepository
+            .AddAsync(footballPitch, cancellationToken);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -50,7 +54,9 @@ public sealed class FootballPitchesService : IFootballPitchesService
     public async Task RemoveById(int footballPitchId, CancellationToken cancellationToken = default)
     {
         var footballPitchDto = await GetByIdAsync(footballPitchId, cancellationToken);
-        _repositoryManager.FootballPitchesRepository.Remove(_mapper.Map<FootballPitch>(footballPitchDto));
+
+        _repositoryManager.FootballPitchesRepository
+            .Remove(_mapper.Map<FootballPitch>(footballPitchDto));
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -59,7 +65,8 @@ public sealed class FootballPitchesService : IFootballPitchesService
     {
         var footballPitchDto = await GetByIdAsync(footballPiatchId, cancellationToken);
 
-        await _repositoryManager.FootballPitchesRepository.UpdateAsync(footballPiatchId, _mapper.Map<FootballPitch>(footballPitchDto));
+        await _repositoryManager.FootballPitchesRepository
+            .UpdateAsync(footballPiatchId, _mapper.Map<FootballPitch>(footballPitchDto));
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
     }

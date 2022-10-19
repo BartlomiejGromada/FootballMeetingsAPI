@@ -24,9 +24,9 @@ namespace Persistence.Repositories
                 .FirstOrDefaultAsync(footballPitch => footballPitch.Id == footballPitchId, cancellationToken);
         }
 
-        public async Task AddAsync(FootballPitch footballPitch)
+        public async Task AddAsync(FootballPitch footballPitch, CancellationToken cancellationToken = default)
         {
-            await _dbContext.FootballPitches.AddAsync(footballPitch);
+            await _dbContext.FootballPitches.AddAsync(footballPitch, cancellationToken);
         }
 
         public void Remove(FootballPitch footballPitch)

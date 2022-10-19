@@ -1,6 +1,6 @@
 ﻿using Contracts.FootballPitch;
 
-namespace Contracts;
+namespace Contracts.FootballMatch;
 
 public class FootballMatchDto
 {
@@ -11,6 +11,6 @@ public class FootballMatchDto
     public List<PlayerDto> Players { get; set; }
     public FootballPitchDto FootballPitch { get; set; }
     public DateTime CreatedAt { get; set; }
-    public UserDto Creator { get; set; }
+    public PlayerDto Creator { get; set; }
     public List<CommentDto> Comments { get; set; }
 }

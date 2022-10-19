@@ -1,4 +1,6 @@
-﻿namespace Contracts.FootballPitch;
+﻿using Contracts.FootballMatch;
+
+namespace Contracts.FootballPitch;
 
 public class FootballPitchDto
 {

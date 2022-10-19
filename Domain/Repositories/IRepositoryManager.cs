@@ -2,7 +2,7 @@
 
 public interface IRepositoryManager
 {
-    IFootballMatchesPlayersRepository FootballMatchesPlayersRepository { get; }
+    IFootballMatchesRepository FootballMatchesRepository { get; }
     IFootballPitchesRepository FootballPitchesRepository { get; }
     IUnitOfWork UnitOfWork { get; }
 }

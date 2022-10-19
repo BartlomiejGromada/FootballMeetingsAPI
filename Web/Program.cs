@@ -1,4 +1,5 @@
 using Domain.Repositories;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
 using Persistence;
@@ -6,13 +7,15 @@ using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.MappingProfiles;
+using System.Text.Json.Serialization;
 using Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,6 +33,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();
+builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 

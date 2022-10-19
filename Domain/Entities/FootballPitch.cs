@@ -9,5 +9,5 @@ public class FootballPitch
     public string StreetNumber { get; set; }
     public byte[] Image { get; set; }
 
-    public ICollection<FootballMatch> FootballMatches { get; set; }
+   public virtual ICollection<FootballMatch> FootballMatches { get; set; }
 }

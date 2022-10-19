@@ -34,7 +34,11 @@ namespace Web.Middlewares
 
             await context.Response.WriteAsJsonAsync(new
             {
-                error = exception.Message,
+                error = exception switch
+                {
+                    NotFoundException => exception.Message,
+                    _ => "Something went wrong",
+                },
             });
         }
     }

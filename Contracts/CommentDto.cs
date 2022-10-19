@@ -1,4 +1,6 @@
-﻿namespace Contracts;
+﻿using Contracts.FootballMatch;
+
+namespace Contracts;
 
 public class CommentDto
 {

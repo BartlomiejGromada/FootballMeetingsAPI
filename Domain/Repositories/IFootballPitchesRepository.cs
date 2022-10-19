@@ -6,7 +6,7 @@ namespace Domain.Repositories
     {
         Task<IEnumerable<FootballPitch>> GetAllAsync(CancellationToken cancellationToken = default);
         Task<FootballPitch> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default);
-        Task AddAsync(FootballPitch footballPitch);
+        Task AddAsync(FootballPitch footballPitch, CancellationToken cancellationToken = default);
         void Remove(FootballPitch footballPitch);
         Task UpdateAsync(int footballPiatchId, FootballPitch footballPitch);
     }
