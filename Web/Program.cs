@@ -1,12 +1,16 @@
+using Contracts.MappingProfiles;
+using Domain.Entities;
 using Domain.Repositories;
-using Microsoft.AspNetCore.Http.Json;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
 using Persistence;
 using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
-using Services.MappingProfiles;
+using Services.Validators;
 using System.Text.Json.Serialization;
 using Web.Middlewares;
 
@@ -34,8 +38,13 @@ builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();
 builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
+
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
 var app = builder.Build();
 

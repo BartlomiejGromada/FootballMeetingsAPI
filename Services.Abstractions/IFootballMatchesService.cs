@@ -1,4 +1,4 @@
-﻿using Contracts.FootballMatch;
+﻿using Contracts.Models.FootballMatch;
 
 namespace Services.Abstractions;
 

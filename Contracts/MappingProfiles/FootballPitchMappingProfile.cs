@@ -1,7 +1,7 @@
-﻿using Contracts.FootballPitch;
+﻿using Contracts.Models.FootballPitch;
 using Domain.Entities;
 
-namespace Services.MappingProfiles;
+namespace Contracts.MappingProfiles;
 
 internal sealed class FootballPitchMappingProfile : MappingProfile
 {

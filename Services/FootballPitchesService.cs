@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.FootballPitch;
+using Contracts.Models.FootballPitch;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -51,7 +51,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
         return _mapper.Map<FootballPitchDto>(footballPitch);
     }
 
-    public async Task RemoveById(int footballPitchId, CancellationToken cancellationToken = default)
+    public async Task RemoveByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
     {
         var footballPitchDto = await GetByIdAsync(footballPitchId, cancellationToken);
 

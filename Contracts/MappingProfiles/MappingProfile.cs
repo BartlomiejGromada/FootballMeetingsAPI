@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Services.MappingProfiles;
+namespace Contracts.MappingProfiles;
 
 public abstract class MappingProfile : Profile
 {

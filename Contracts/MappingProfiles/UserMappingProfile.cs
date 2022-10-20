@@ -1,7 +1,7 @@
-﻿using Contracts;
+﻿using Contracts.Models.User;
 using Domain.Entities;
 
-namespace Services.MappingProfiles;
+namespace Contracts.MappingProfiles;
 
 internal sealed class UserMappingProfile : MappingProfile
 {
@@ -9,5 +9,7 @@ internal sealed class UserMappingProfile : MappingProfile
     {
         CreateMap<User, UserDto>();
         CreateMap<User, PlayerDto>();
+        CreateMap<UserDto, User>();
+        CreateMap<RegisterUserDto, User>();
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-public class FootballMatchesRepository : IFootballMatchesRepository
+internal sealed class FootballMatchesRepository : IFootballMatchesRepository
 {
     private readonly FootballMeetingsDbContext _dbContext;
 

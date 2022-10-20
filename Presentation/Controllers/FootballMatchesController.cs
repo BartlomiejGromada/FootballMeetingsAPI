@@ -1,4 +1,4 @@
-﻿using Contracts.FootballMatch;
+﻿using Contracts.Models.FootballMatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.FootballMatch;
+using Contracts.Models.FootballMatch;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
@@ -51,10 +51,22 @@ public class FootballMatchesService : IFootballMatchesService
     {
         var footballMatch = _mapper.Map<FootballMatch>(dto);
 
+        //TODO: User Id from userContextService
+        footballMatch.CreatorId = 1;
+        footballMatch.IsActive = true;
+        footballMatch.CreatedAt = DateTime.UtcNow;
+
+        foreach (var playerId in dto.PlayersIds.Distinct())
+        {
+            //var player = _repositoryManager.UserRepository.GetById(playerId);
+            //footballMatch.Players.Add(player);
+        }
+
         await _repositoryManager.FootballMatchesRepository
             .AddAsync(footballMatch, cancellationToken);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+
 
         return _mapper.Map<FootballMatchDto>(cancellationToken);
     }

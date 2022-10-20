@@ -1,4 +1,4 @@
-﻿namespace Contracts.FootballMatch;
+﻿namespace Contracts.Models.FootballMatch;
 
 public class UpdateFootballMatchDto
 {

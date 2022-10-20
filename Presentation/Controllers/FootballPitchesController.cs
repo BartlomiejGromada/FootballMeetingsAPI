@@ -1,4 +1,6 @@
-﻿using Contracts.FootballPitch;
+﻿using Contracts.Models.FootballPitch;
+using Contracts.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -24,8 +26,7 @@ public class FootballPitchesController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<FootballPitchDto>> GetById([FromRoute] int id, 
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<FootballPitchDto>> GetById([FromRoute] int id, CancellationToken cancellationToken = default)
     {
         var footballPitch = await _footballPitchesService.GetByIdAsync(id, cancellationToken);
 
@@ -33,9 +34,16 @@ public class FootballPitchesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Add([FromBody] AddFootballPitchDto dto, 
+    public async Task<ActionResult> Add([FromBody] AddFootballPitchDto dto, [FromServices] IValidator<AddFootballPitchDto> validator,
         CancellationToken cancellationToken = default)
     {
+        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+        if(!validationResult.IsValid)
+        {
+            validationResult.AddToModelState(this.ModelState);
+            return BadRequest(this.ModelState);
+        }
+
         var footballPitch = await _footballPitchesService.AddAsync(dto, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = footballPitch.Id }, footballPitch);
@@ -53,7 +61,7 @@ public class FootballPitchesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveById([FromRoute]int id, CancellationToken cancellationToken = default)
     {
-        await _footballPitchesService.RemoveById(id, cancellationToken);
+        await _footballPitchesService.RemoveByIdAsync(id, cancellationToken);
 
         return NoContent();
     }

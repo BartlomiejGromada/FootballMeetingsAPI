@@ -24,6 +24,13 @@ namespace Persistence.Repositories
                 .FirstOrDefaultAsync(footballPitch => footballPitch.Id == footballPitchId, cancellationToken);
         }
 
+        public async Task<FootballPitch> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.FootballPitches
+                .AsNoTracking()
+                .FirstOrDefaultAsync(fp => fp.Name.ToLower() == name.ToLower().Trim());
+        }
+
         public async Task AddAsync(FootballPitch footballPitch, CancellationToken cancellationToken = default)
         {
             await _dbContext.FootballPitches.AddAsync(footballPitch, cancellationToken);

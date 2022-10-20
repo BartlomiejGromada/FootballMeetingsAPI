@@ -1,6 +1,6 @@
-﻿using Contracts.FootballMatch;
+﻿using Contracts.Models.FootballMatch;
 
-namespace Contracts.FootballPitch;
+namespace Contracts.Models.FootballPitch;
 
 public class FootballPitchDto
 {

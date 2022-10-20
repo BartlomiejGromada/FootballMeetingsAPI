@@ -1,4 +1,4 @@
-﻿namespace Contracts;
+﻿namespace Contracts.Models.User;
 
 public class PlayerDto
 {
