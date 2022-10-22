@@ -47,19 +47,18 @@ public class FootballMatchesService : IFootballMatchesService
         return _mapper.Map<FootballMatchDto>(footballMatch);
     }
 
-    public async Task<FootballMatchDto> AddAsync(AddFootballMatchDto dto, CancellationToken cancellationToken = default)
+    public async Task<int> AddAsync(AddFootballMatchDto dto, CancellationToken cancellationToken = default)
     {
         var footballMatch = _mapper.Map<FootballMatch>(dto);
 
         //TODO: User Id from userContextService
-        footballMatch.CreatorId = 1;
+        footballMatch.CreatorId = 2;
         footballMatch.IsActive = true;
         footballMatch.CreatedAt = DateTime.UtcNow;
 
         foreach (var playerId in dto.PlayersIds.Distinct())
         {
-            //var player = _repositoryManager.UserRepository.GetById(playerId);
-            //footballMatch.Players.Add(player);
+            footballMatch.Players.Add(new User() { Id = playerId });
         }
 
         await _repositoryManager.FootballMatchesRepository
@@ -67,8 +66,7 @@ public class FootballMatchesService : IFootballMatchesService
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
-
-        return _mapper.Map<FootballMatchDto>(cancellationToken);
+        return footballMatch.Id;
     }
 
     public async Task RemoveByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)

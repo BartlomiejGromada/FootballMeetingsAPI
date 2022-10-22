@@ -1,4 +1,6 @@
 ﻿using Contracts.Models.FootballMatch;
+using Contracts.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -42,18 +44,32 @@ public class FootballMatchesController : ControllerBase
 	}
 
 	[HttpPost]
-	public async Task<ActionResult<FootballMatchDto>> Add([FromBody] AddFootballMatchDto dto, 
-		CancellationToken cancellationToken = default)
+	public async Task<ActionResult> Add([FromBody] AddFootballMatchDto dto, 
+		[FromServices] IValidator<AddFootballMatchDto> validator, CancellationToken cancellationToken = default)
 	{
-		var footballMatch = await _footballMatchesService.AddAsync(dto, cancellationToken);
+		var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+		if(!validationResult.IsValid)
+		{
+			validationResult.AddToModelState(this.ModelState);
+			return BadRequest(this.ModelState);
+		}
 
-		return CreatedAtAction(nameof(GetById), new { id = footballMatch.Id }, footballMatch);
+		var footballMatchId = await _footballMatchesService.AddAsync(dto, cancellationToken);
+
+		return Created($"api/v1/football-match/{footballMatchId}", null);
 	}
 
 	[HttpPut("{id}")]
 	public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballMatchDto dto,
-		CancellationToken cancellationToken = default)
+		[FromServices] IValidator<UpdateFootballMatchDto> validator, CancellationToken cancellationToken = default)
 	{
+		var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+		if(!validationResult.IsValid)
+		{
+			validationResult.AddToModelState(this.ModelState);
+			return BadRequest(this.ModelState);
+		}
+
 		await _footballMatchesService.UpdateAsync(id, dto, cancellationToken);
 
 		return NoContent();

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Persistence;
 
@@ -18,5 +19,17 @@ public sealed class FootballMeetingsDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FootballMeetingsDbContext).Assembly);
+    }
+}
+
+public static class Extensions
+{
+    public static void AddDbContext(this IServiceCollection serviceCollection, string connectionString)
+    {
+        serviceCollection.AddDbContext<FootballMeetingsDbContext>(option =>
+        {
+            option.UseSqlServer(connectionString);
+        });
+
     }
 }

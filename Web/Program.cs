@@ -28,12 +28,9 @@ builder.Services.AddSwaggerGen();
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
-builder.Services.AddDbContext<FootballMeetingsDbContext>(option =>
-{
-    option.UseSqlServer(builder.Configuration.GetConnectionString("FootballMeetingsConnectionString"));
-});
+builder.Services.AddDbContext(builder.Configuration.GetConnectionString("FootballMeetingsConnectionString"));
 
-builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+builder.Services.AddAutoMapper();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();

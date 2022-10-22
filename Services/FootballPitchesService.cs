@@ -39,7 +39,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
         return _mapper.Map<FootballPitchDto>(footballPitch);
     }
 
-    public async Task<FootballPitchDto> AddAsync(AddFootballPitchDto dto, CancellationToken cancellationToken = default)
+    public async Task<int> AddAsync(AddFootballPitchDto dto, CancellationToken cancellationToken = default)
     {
         var footballPitch = _mapper.Map<FootballPitch>(dto);
 
@@ -48,7 +48,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<FootballPitchDto>(footballPitch);
+        return footballPitch.Id;
     }
 
     public async Task RemoveByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
@@ -65,8 +65,14 @@ public sealed class FootballPitchesService : IFootballPitchesService
     {
         var footballPitchDto = await GetByIdAsync(footballPiatchId, cancellationToken);
 
+        var footballPitchByName = await _repositoryManager.FootballPitchesRepository.GetByNameAsync(dto.Name, cancellationToken);
+        if(footballPitchByName != null && footballPitchDto.Id != footballPitchByName.Id)
+        {
+            throw new FootballPitchNameIsAlreadyTakenException($"Football pitch with name {dto.Name} is already taken");
+        }
+
         await _repositoryManager.FootballPitchesRepository
-            .UpdateAsync(footballPiatchId, _mapper.Map<FootballPitch>(footballPitchDto));
+            .UpdateAsync(footballPiatchId, _mapper.Map<FootballPitch>(dto));
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
     }

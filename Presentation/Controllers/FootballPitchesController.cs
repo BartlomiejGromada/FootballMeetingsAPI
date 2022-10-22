@@ -1,6 +1,8 @@
 ﻿using Contracts.Models.FootballPitch;
 using Contracts.Validators;
+using Domain.Exceptions;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -44,16 +46,30 @@ public class FootballPitchesController : ControllerBase
             return BadRequest(this.ModelState);
         }
 
-        var footballPitch = await _footballPitchesService.AddAsync(dto, cancellationToken);
+        var footballPitchId = await _footballPitchesService.AddAsync(dto, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = footballPitch.Id }, footballPitch);
+        return CreatedAtAction(nameof(GetById), new { id = footballPitchId }, null);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballPitchDto dto, 
-        CancellationToken cancellationToken = default)
+        [FromServices] IValidator<UpdateFootballPitchDto> validator, CancellationToken cancellationToken = default)
     {
-        await _footballPitchesService.UpdateAsync(id, dto, cancellationToken);
+        var validationResult = validator.Validate(dto);
+        try
+        {
+            await _footballPitchesService.UpdateAsync(id, dto, cancellationToken);
+        }
+        catch(FootballPitchNameIsAlreadyTakenException exception)
+        {
+            validationResult.Errors.Add(new ValidationFailure(nameof(UpdateFootballPitchDto.Name), exception.Message));
+        }
+
+        if(!validationResult.IsValid)
+        {
+            validationResult.AddToModelState(this.ModelState);
+            return BadRequest(this.ModelState);
+        }
 
         return NoContent();
     }

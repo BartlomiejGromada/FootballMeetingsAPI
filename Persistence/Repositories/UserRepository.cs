@@ -7,9 +7,16 @@ namespace Persistence.Repositories;
 internal sealed class UsersRepository : IUsersRepository
 {
     private readonly FootballMeetingsDbContext _dbContext;
+
     public UsersRepository(FootballMeetingsDbContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    public async Task<bool> ExistsByIdAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Users
+            .AnyAsync(user => user.Id == userId, cancellationToken);
     }
 
     public async Task RegisterUserAsync(User user, CancellationToken cancellationToken = default)

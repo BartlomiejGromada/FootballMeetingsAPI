@@ -8,11 +8,11 @@ public class FootballMatch
     public bool IsActive { get; set; }
     public DateTime Date { get; set; }
 
-    public virtual ICollection<User> Players { get; set; }
+    public virtual ICollection<User> Players { get; set; } = new List<User>();
     public virtual FootballPitch FootballPitch { get; set; }
     public int FootballPitchId { get; set; }
     public DateTime CreatedAt { get; set; }
     public virtual User Creator { get; set; }
     public int CreatorId { get; set; }
-    public virtual ICollection<Comment> Comments { get; set; }
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }

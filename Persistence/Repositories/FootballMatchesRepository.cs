@@ -44,6 +44,10 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
     }
     public async Task AddAsync(FootballMatch footballMatch, CancellationToken cancellationToken = default)
     {
+        foreach (var player in footballMatch.Players)
+        {
+            _dbContext.Entry(player).State = EntityState.Unchanged;
+        }
         await _dbContext.FootballMatches.AddAsync(footballMatch, cancellationToken);
     }
 

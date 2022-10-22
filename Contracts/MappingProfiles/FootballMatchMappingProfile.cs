@@ -1,9 +1,10 @@
-﻿using Contracts.Models.FootballMatch;
+﻿using AutoMapper;
+using Contracts.Models.FootballMatch;
 using Domain.Entities;
 
 namespace Contracts.MappingProfiles;
 
-internal sealed class FootballMatchMappingProfile : MappingProfile
+internal sealed class FootballMatchMappingProfile : Profile
 {
 	public FootballMatchMappingProfile()
 	{

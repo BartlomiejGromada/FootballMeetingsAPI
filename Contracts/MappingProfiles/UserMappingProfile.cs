@@ -1,9 +1,10 @@
-﻿using Contracts.Models.User;
+﻿using AutoMapper;
+using Contracts.Models.User;
 using Domain.Entities;
 
 namespace Contracts.MappingProfiles;
 
-internal sealed class UserMappingProfile : MappingProfile
+internal sealed class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
