@@ -9,8 +9,8 @@ public class User
     public string LastName { get; set; }
     public string NickName { get; set; }
     public DateTime? DateOfBirth { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public bool IsActive { get; set; } = true;
 
     public virtual Role Role { get; set; }
     public int RoleId { get; set; }

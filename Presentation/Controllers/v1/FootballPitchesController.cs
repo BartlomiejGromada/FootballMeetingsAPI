@@ -6,10 +6,12 @@ using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
-namespace Presentation.Controllers;
+namespace Presentation.Controllers.v1;
 
 [ApiController]
 [Route("api/v1/football-pitches")]
+[Produces("application/json")]
+[ApiVersion("1.0")]
 public class FootballPitchesController : ControllerBase
 {
     private readonly IFootballPitchesService _footballPitchesService;
@@ -40,10 +42,10 @@ public class FootballPitchesController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var validationResult = await validator.ValidateAsync(dto, cancellationToken);
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
-            validationResult.AddToModelState(this.ModelState);
-            return BadRequest(this.ModelState);
+            validationResult.AddToModelState(ModelState);
+            return BadRequest(ModelState);
         }
 
         var footballPitchId = await _footballPitchesService.AddAsync(dto, cancellationToken);
@@ -52,7 +54,7 @@ public class FootballPitchesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballPitchDto dto, 
+    public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballPitchDto dto,
         [FromServices] IValidator<UpdateFootballPitchDto> validator, CancellationToken cancellationToken = default)
     {
         var validationResult = validator.Validate(dto);
@@ -60,22 +62,22 @@ public class FootballPitchesController : ControllerBase
         {
             await _footballPitchesService.UpdateAsync(id, dto, cancellationToken);
         }
-        catch(FootballPitchNameIsAlreadyTakenException exception)
+        catch (FootballPitchNameIsAlreadyTakenException exception)
         {
             validationResult.Errors.Add(new ValidationFailure(nameof(UpdateFootballPitchDto.Name), exception.Message));
         }
 
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
-            validationResult.AddToModelState(this.ModelState);
-            return BadRequest(this.ModelState);
+            validationResult.AddToModelState(ModelState);
+            return BadRequest(ModelState);
         }
 
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveById([FromRoute]int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> RemoveById([FromRoute] int id, CancellationToken cancellationToken = default)
     {
         await _footballPitchesService.RemoveByIdAsync(id, cancellationToken);
 

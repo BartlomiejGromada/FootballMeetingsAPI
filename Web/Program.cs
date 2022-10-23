@@ -12,6 +12,7 @@ using Services;
 using Services.Abstractions;
 using Services.Validators;
 using System.Text.Json.Serialization;
+using Web.Extensions;
 using Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,14 +23,14 @@ builder.Services.AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
+builder.Services.ConfigureApiVersion();
 
 // NLog: Setup NLog for Dependency injection
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
 builder.Services.AddDbContext(builder.Configuration.GetConnectionString("FootballMeetingsConnectionString"));
-
 builder.Services.AddAutoMapper();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
@@ -60,4 +61,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.SeedData().Run();

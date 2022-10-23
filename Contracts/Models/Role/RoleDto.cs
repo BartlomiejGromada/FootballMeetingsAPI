@@ -1,4 +1,4 @@
-﻿namespace Contracts.Models;
+﻿namespace Contracts.Models.Role;
 
 public class RoleDto
 {

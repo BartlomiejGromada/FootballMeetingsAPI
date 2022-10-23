@@ -1,4 +1,6 @@
-﻿namespace Contracts.Models.User;
+﻿using Contracts.Models.Role;
+
+namespace Contracts.Models.User;
 
 public class UserDto
 {

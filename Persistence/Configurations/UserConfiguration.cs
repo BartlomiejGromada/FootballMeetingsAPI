@@ -10,9 +10,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(u => u.Email).IsRequired();
         builder.Property(u => u.Password).IsRequired();
+        builder.Property(u => u.NickName).IsRequired();
         builder.Property(u => u.FirstName).HasMaxLength(150);
         builder.Property(u => u.LastName).HasMaxLength(200);
-        builder.Property(u => u.DateOfBirth).HasDefaultValueSql("GETDATE()");
 
         builder.HasOne(u => u.Role)
             .WithMany()
