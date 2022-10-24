@@ -29,6 +29,7 @@ namespace Web.Middlewares
             context.Response.StatusCode = exception switch
             {
                 NotFoundException => StatusCodes.Status404NotFound,
+                BadRequestException => StatusCodes.Status400BadRequest,
                 _ => StatusCodes.Status500InternalServerError,
             };
 
@@ -37,6 +38,7 @@ namespace Web.Middlewares
                 error = exception switch
                 {
                     NotFoundException => exception.Message,
+                    BadRequestException => exception.Message,
                     _ => "Something went wrong",
                 },
             });

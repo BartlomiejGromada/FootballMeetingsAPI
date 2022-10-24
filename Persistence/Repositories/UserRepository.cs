@@ -16,7 +16,7 @@ internal sealed class UsersRepository : IUsersRepository
     public async Task<bool> ExistsByIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
-            .AnyAsync(user => user.Id == userId, cancellationToken);
+            .AnyAsync(user => user.Id == userId && user.IsActive, cancellationToken);
     }
 
     public async Task RegisterUserAsync(User user, CancellationToken cancellationToken = default)
@@ -29,7 +29,8 @@ internal sealed class UsersRepository : IUsersRepository
     {
         var user = await _dbContext.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower(), cancellationToken);
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower() && user.IsActive, cancellationToken);
 
         return user;
     }
@@ -37,13 +38,13 @@ internal sealed class UsersRepository : IUsersRepository
     public async Task<User> GetUserByIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive, cancellationToken);
     }
 
     public async Task RemoveUserByIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         var user = await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
+            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive, cancellationToken);
 
         user.IsActive = false;
     }

@@ -13,7 +13,7 @@ public static class UserSeed
             {
                 Id = 1,
                 Email = "bartlomiejgromada97@gmail.com",
-                Password = "AHSWxNXA88y9+fH8ZglzrAAP14D5SQxkxk+S+kiBu/HsObqfbklFGqNWzx9lA1UMQQ==",
+                Password = "ADnOPPD5JSDzdd91SnZSJ2M1UIXTX91pWH8dcLeFqxHUHDrRHg+4lWgqk3pAarUTdg==",
                 FirstName = "Bartłomiej",
                 LastName = "Gromada",
                 DateOfBirth = new DateTime(2022, 1, 18),
@@ -27,7 +27,7 @@ public static class UserSeed
             {
                 Id = 2,
                 Email = "jankowalski@gmail.com",
-                Password = "AHSWxNXA88y9+fH8ZglzrAAP14D5SQxkxk+S+kiBu/HsObqfbklFGqNWzx9lA1UMQQ==",
+                Password = "ADnOPPD5JSDzdd91SnZSJ2M1UIXTX91pWH8dcLeFqxHUHDrRHg+4lWgqk3pAarUTdg==",
                 FirstName = "Jan",
                 LastName = "Kowalsk",
                 DateOfBirth = null,
@@ -41,7 +41,7 @@ public static class UserSeed
             {
                 Id = 3,
                 Email = "adamnowak@gmail.com",
-                Password = "AHSWxNXA88y9+fH8ZglzrAAP14D5SQxkxk+S+kiBu/HsObqfbklFGqNWzx9lA1UMQQ==",
+                Password = "ADnOPPD5JSDzdd91SnZSJ2M1UIXTX91pWH8dcLeFqxHUHDrRHg+4lWgqk3pAarUTdg==",
                 FirstName = null,
                 LastName = null,
                 DateOfBirth = new DateTime(1998, 5, 10),

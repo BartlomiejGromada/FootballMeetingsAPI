@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.Models.Account;
 using Contracts.Models.User;
 using Domain.Entities;
 

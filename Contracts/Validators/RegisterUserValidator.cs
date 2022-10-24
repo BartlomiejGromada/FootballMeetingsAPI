@@ -1,4 +1,4 @@
-﻿using Contracts.Models.User;
+﻿using Contracts.Models.Account;
 using Domain.Repositories;
 using FluentValidation;
 using System.Text.RegularExpressions;

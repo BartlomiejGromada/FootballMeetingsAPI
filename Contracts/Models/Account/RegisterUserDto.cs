@@ -1,4 +1,4 @@
-﻿namespace Contracts.Models.User;
+﻿namespace Contracts.Models.Account;
 
 public class RegisterUserDto
 {

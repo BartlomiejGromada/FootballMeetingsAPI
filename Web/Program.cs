@@ -33,7 +33,10 @@ builder.Host.UseNLog();
 builder.Services.AddDbContext(builder.Configuration.GetConnectionString("FootballMeetingsConnectionString"));
 builder.Services.AddAutoMapper();
 
+builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();
 builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
@@ -54,6 +57,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
+
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 
