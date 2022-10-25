@@ -1,8 +1,11 @@
 ﻿using Contracts.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Seeds;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace Web.Extensions;
@@ -23,6 +26,31 @@ public static class Extensions
                     Name = "Send email to me :)",
                     Email = "bartlomiejgromada97@gmail.com",
                 },
+            });
+
+            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+            {
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                Description = "Please enter a valid token",
+                Name = "Authorization",
+                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer",
+                        }
+                    },
+                    Array.Empty<string>()
+                }
             });
         });
 
@@ -47,11 +75,11 @@ public static class Extensions
         configuration.GetSection("Authentication").Bind(authenticationSettings);
         serviceCollection.AddSingleton(authenticationSettings);
 
-        serviceCollection.AddAuthentication(option =>
+        serviceCollection.AddAuthentication(options =>
         {
-            option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(cfg =>
         {
             cfg.RequireHttpsMetadata = false;
@@ -62,6 +90,19 @@ public static class Extensions
                 ValidAudience = authenticationSettings.JwtAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
             };
+        });
+
+        return serviceCollection;
+    }
+
+    public static IServiceCollection ConfigureAuthorization(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddAuthorization(options =>
+        {
+            //options.AddPolicy("email", builder =>
+            //{
+            //    builder.RequireClaim(ClaimTypes.Email, "bartlomiejgromada97@gmail.com");
+            //});
         });
 
         return serviceCollection;

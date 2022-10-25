@@ -6,7 +6,7 @@ using Services.Abstractions;
 
 namespace Presentation.Controllers.v1;
 [ApiController]
-[Route("api/account")]
+[Route("api/v1/account")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
 public class AccountController : ControllerBase
@@ -30,7 +30,7 @@ public class AccountController : ControllerBase
 
         var userId = await _accountService.RegisterUserAsync(dto, cancellationToken);
 
-        return Created($"api/account/{userId}", null);
+        return Created($"api/v1/account/{userId}", null);
     }
 
     [HttpPost("login")]

@@ -1,6 +1,7 @@
 ﻿using Contracts.Models.FootballMatch;
 using Contracts.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -10,6 +11,7 @@ namespace Presentation.Controllers.v1;
 [Route("api/v1/football-matches")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
+[Authorize]
 public class FootballMatchesController : ControllerBase
 {
     private readonly IFootballMatchesService _footballMatchesService;

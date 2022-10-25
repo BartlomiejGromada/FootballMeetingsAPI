@@ -3,6 +3,7 @@ using Contracts.Validators;
 using Domain.Exceptions;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -12,19 +13,25 @@ namespace Presentation.Controllers.v1;
 [Route("api/v1/football-pitches")]
 [Produces("application/json")]
 [ApiVersion("1.0")]
+[Authorize]
 public class FootballPitchesController : ControllerBase
 {
     private readonly IFootballPitchesService _footballPitchesService;
+    private readonly IUserContextService _userContextService;
 
-    public FootballPitchesController(IFootballPitchesService footballPitchesService)
+    public FootballPitchesController(IFootballPitchesService footballPitchesService, 
+        IUserContextService userContextService)
     {
         _footballPitchesService = footballPitchesService;
+        _userContextService = userContextService;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<FootballPitchDto>>> GetAll(CancellationToken cancellationToken = default)
     {
         var footballPitches = await _footballPitchesService.GetAllAsync(cancellationToken);
+
+        var subjectId = _userContextService.GetUserId;
 
         return Ok(footballPitches);
     }

@@ -34,6 +34,7 @@ builder.Services.AddDbContext(builder.Configuration.GetConnectionString("Footbal
 builder.Services.AddAutoMapper();
 
 builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+builder.Services.ConfigureAuthorization();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -41,6 +42,8 @@ builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();
 builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
@@ -59,10 +62,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
