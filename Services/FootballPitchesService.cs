@@ -39,41 +39,41 @@ public sealed class FootballPitchesService : IFootballPitchesService
         return _mapper.Map<FootballPitchDto>(footballPitch);
     }
 
-    public async Task<int> AddAsync(AddFootballPitchDto dto, CancellationToken cancellationToken = default)
+    public async Task<int> Add(AddFootballPitchDto dto)
     {
         var footballPitch = _mapper.Map<FootballPitch>(dto);
 
         await _repositoryManager.FootballPitchesRepository
-            .AddAsync(footballPitch, cancellationToken);
+            .Add(footballPitch);
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
         return footballPitch.Id;
     }
 
-    public async Task RemoveByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
+    public async Task RemoveById(int footballPitchId)
     {
-        var footballPitchDto = await GetByIdAsync(footballPitchId, cancellationToken);
+        var footballPitchDto = await GetByIdAsync(footballPitchId);
 
         _repositoryManager.FootballPitchesRepository
             .Remove(_mapper.Map<FootballPitch>(footballPitchDto));
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int footballPiatchId, UpdateFootballPitchDto dto, CancellationToken cancellationToken = default)
+    public async Task Update(int footballPiatchId, UpdateFootballPitchDto dto)
     {
-        var footballPitchDto = await GetByIdAsync(footballPiatchId, cancellationToken);
+        var footballPitchDto = await GetByIdAsync(footballPiatchId);
 
-        var footballPitchByName = await _repositoryManager.FootballPitchesRepository.GetByNameAsync(dto.Name, cancellationToken);
+        var footballPitchByName = await _repositoryManager.FootballPitchesRepository.GetByNameAsync(dto.Name);
         if(footballPitchByName != null && footballPitchDto.Id != footballPitchByName.Id)
         {
             throw new FootballPitchNameIsAlreadyTakenException($"Football pitch with name {dto.Name} is already taken");
         }
 
         await _repositoryManager.FootballPitchesRepository
-            .UpdateAsync(footballPiatchId, _mapper.Map<FootballPitch>(dto));
+            .Update(footballPiatchId, _mapper.Map<FootballPitch>(dto));
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 }

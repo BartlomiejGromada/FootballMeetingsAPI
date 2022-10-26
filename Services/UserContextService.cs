@@ -4,16 +4,14 @@ using System.Security.Claims;
 
 namespace Services;
 
-public class UserContextService : IUserContextService
+public sealed class UserContextService : IUserContextService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public UserContextService(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
+    public UserContextService(IHttpContextAccessor httpContextAccessor) => _httpContextAccessor = httpContextAccessor;
 
     public ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User;
 
-    public int? GetUserId => User is null ? null :
-        (int?)int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    public int GetUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) != null ? int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) : 0;
+
+    public string GetUserRole => User.FindFirstValue(ClaimTypes.Role) ?? "";
 }

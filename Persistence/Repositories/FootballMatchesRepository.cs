@@ -42,24 +42,24 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
     }
-    public async Task AddAsync(FootballMatch footballMatch, CancellationToken cancellationToken = default)
+    public async Task Add(FootballMatch footballMatch)
     {
         foreach (var player in footballMatch.Players)
         {
             _dbContext.Entry(player).State = EntityState.Unchanged;
         }
-        await _dbContext.FootballMatches.AddAsync(footballMatch, cancellationToken);
+        await _dbContext.FootballMatches.AddAsync(footballMatch);
     }
 
-    public async Task RemoveByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    public async Task RemoveById(int footballMatchId)
     {
         var footballMatch = await _dbContext.FootballMatches
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync();
 
         footballMatch.IsActive = false;
     }
 
-    public async Task UpdateAsync(int footballMatchId, FootballMatch footballMatch)
+    public async Task Update(int footballMatchId, FootballMatch footballMatch)
     {
         var searchedFootballMatch = await _dbContext.FootballMatches
             .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
@@ -68,5 +68,16 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
         searchedFootballMatch.MaxNumberOfPlayers = footballMatch.MaxNumberOfPlayers;
         searchedFootballMatch.Date = footballMatch.Date;
         searchedFootballMatch.FootballPitchId = footballMatch.FootballPitchId;
+    }
+
+    public async Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    {
+        var result = await _dbContext.FootballMatches
+            .Include(fm => fm.Creator)
+            .Select(fm => new { Id = fm.Id, CreatorId = fm.Creator.Id })
+            .AsNoTracking()
+            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
+
+        return result.CreatorId;
     }
 }

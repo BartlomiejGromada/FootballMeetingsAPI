@@ -19,33 +19,18 @@ internal sealed class UsersRepository : IUsersRepository
             .AnyAsync(user => user.Id == userId && user.IsActive, cancellationToken);
     }
 
-    public async Task RegisterUserAsync(User user, CancellationToken cancellationToken = default)
-    {
-        await _dbContext.Users
-            .AddAsync(user, cancellationToken);
-    }
-
     public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var user = await _dbContext.Users
+        return await _dbContext.Users
             .AsNoTracking()
             .Include(u => u.Role)
             .FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower() && user.IsActive, cancellationToken);
-
-        return user;
     }
 
-    public async Task<User> GetUserByIdAsync(int userId, CancellationToken cancellationToken = default)
+    public async Task<User> GetUserByIdAsync(int userId, bool isActive = true, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive, cancellationToken);
-    }
-
-    public async Task RemoveUserByIdAsync(int userId, CancellationToken cancellationToken = default)
-    {
-        var user = await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive, cancellationToken);
-
-        user.IsActive = false;
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive == isActive, cancellationToken);
     }
 }

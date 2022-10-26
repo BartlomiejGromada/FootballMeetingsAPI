@@ -17,21 +17,16 @@ namespace Presentation.Controllers.v1;
 public class FootballPitchesController : ControllerBase
 {
     private readonly IFootballPitchesService _footballPitchesService;
-    private readonly IUserContextService _userContextService;
 
-    public FootballPitchesController(IFootballPitchesService footballPitchesService, 
-        IUserContextService userContextService)
+    public FootballPitchesController(IFootballPitchesService footballPitchesService)
     {
         _footballPitchesService = footballPitchesService;
-        _userContextService = userContextService;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<FootballPitchDto>>> GetAll(CancellationToken cancellationToken = default)
     {
         var footballPitches = await _footballPitchesService.GetAllAsync(cancellationToken);
-
-        var subjectId = _userContextService.GetUserId;
 
         return Ok(footballPitches);
     }
@@ -45,6 +40,7 @@ public class FootballPitchesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<ActionResult> Add([FromBody] AddFootballPitchDto dto, [FromServices] IValidator<AddFootballPitchDto> validator,
         CancellationToken cancellationToken = default)
     {
@@ -55,19 +51,20 @@ public class FootballPitchesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var footballPitchId = await _footballPitchesService.AddAsync(dto, cancellationToken);
+        var footballPitchId = await _footballPitchesService.Add(dto);
 
         return CreatedAtAction(nameof(GetById), new { id = footballPitchId }, null);
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballPitchDto dto,
-        [FromServices] IValidator<UpdateFootballPitchDto> validator, CancellationToken cancellationToken = default)
+        [FromServices] IValidator<UpdateFootballPitchDto> validator)
     {
         var validationResult = validator.Validate(dto);
         try
         {
-            await _footballPitchesService.UpdateAsync(id, dto, cancellationToken);
+            await _footballPitchesService.Update(id, dto);
         }
         catch (FootballPitchNameIsAlreadyTakenException exception)
         {
@@ -83,10 +80,11 @@ public class FootballPitchesController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Admin, Creator")]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveById([FromRoute] int id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult> RemoveById([FromRoute] int id)
     {
-        await _footballPitchesService.RemoveByIdAsync(id, cancellationToken);
+        await _footballPitchesService.RemoveById(id);
 
         return NoContent();
     }

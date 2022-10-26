@@ -15,10 +15,12 @@ namespace Presentation.Controllers.v1;
 public class FootballMatchesController : ControllerBase
 {
     private readonly IFootballMatchesService _footballMatchesService;
+    private readonly IUserContextService _userContextService;
 
-    public FootballMatchesController(IFootballMatchesService footballMatchesService)
+    public FootballMatchesController(IFootballMatchesService footballMatchesService, IUserContextService userContextService)
     {
         _footballMatchesService = footballMatchesService;
+        _userContextService = userContextService;
     }
 
     [HttpGet]
@@ -48,6 +50,7 @@ public class FootballMatchesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin, Creator")]
     public async Task<ActionResult> Add([FromBody] AddFootballMatchDto dto,
         [FromServices] IValidator<AddFootballMatchDto> validator, CancellationToken cancellationToken = default)
     {
@@ -58,7 +61,7 @@ public class FootballMatchesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var footballMatchId = await _footballMatchesService.AddAsync(dto, cancellationToken);
+        var footballMatchId = await _footballMatchesService.Add(dto);
 
         return Created($"api/v1/football-match/{footballMatchId}", null);
     }
@@ -67,6 +70,12 @@ public class FootballMatchesController : ControllerBase
     public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballMatchDto dto,
         [FromServices] IValidator<UpdateFootballMatchDto> validator, CancellationToken cancellationToken = default)
     {
+        var footballMatch = await _footballMatchesService.GetByIdAsync(id, cancellationToken);
+        if(_userContextService.GetUserRole != "Admin" && footballMatch.Creator.Id != _userContextService.GetUserId)
+        {
+            return new ForbidResult();
+        }
+
         var validationResult = await validator.ValidateAsync(dto, cancellationToken);
         if (!validationResult.IsValid)
         {
@@ -74,7 +83,7 @@ public class FootballMatchesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        await _footballMatchesService.UpdateAsync(id, dto, cancellationToken);
+        await _footballMatchesService.Update(id, dto);
 
         return NoContent();
     }
@@ -82,7 +91,13 @@ public class FootballMatchesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveById([FromRoute] int id, CancellationToken cancellationToken = default)
     {
-        await _footballMatchesService.RemoveByIdAsync(id, cancellationToken);
+        var footballMatch = await _footballMatchesService.GetByIdAsync(id, cancellationToken);
+        if(_userContextService.GetUserRole != "Admin" && footballMatch.Creator.Id != _userContextService.GetUserId)
+        {
+            return new ForbidResult();
+        }
+
+        await _footballMatchesService.RemoveById(id);
 
         return NoContent();
     }

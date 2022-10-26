@@ -1,6 +1,8 @@
-﻿namespace Services.Abstractions;
+﻿using Contracts.Models.User;
+
+namespace Services.Abstractions;
 
 public interface IUsersService
 {
-    Task RemoveUserByIdAsync(int userId, CancellationToken cancellationToken = default);
+    Task<UserDto> GetByIdAsync(int userId, CancellationToken cancellationToken = default);
 }

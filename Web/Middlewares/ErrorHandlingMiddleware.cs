@@ -1,4 +1,6 @@
-﻿using Domain.Exceptions;
+﻿
+
+using Domain.Exceptions;
 
 namespace Web.Middlewares
 {
@@ -30,6 +32,7 @@ namespace Web.Middlewares
             {
                 NotFoundException => StatusCodes.Status404NotFound,
                 BadRequestException => StatusCodes.Status400BadRequest,
+                ForbidException => StatusCodes.Status403Forbidden,
                 _ => StatusCodes.Status500InternalServerError,
             };
 
@@ -39,6 +42,7 @@ namespace Web.Middlewares
                 {
                     NotFoundException => exception.Message,
                     BadRequestException => exception.Message,
+                    ForbidException => "Access denied",
                     _ => "Something went wrong",
                 },
             });

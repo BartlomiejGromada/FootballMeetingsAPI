@@ -9,7 +9,7 @@ public interface IFootballPitchesRepository
     Task<IEnumerable<FootballPitch>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<FootballPitch> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default);
     Task<FootballPitch> GetByNameAsync(string footballPitchName, CancellationToken cancellationToken = default);
-    Task AddAsync(FootballPitch footballPitch, CancellationToken cancellationToken = default);
+    Task Add(FootballPitch footballPitch);
     void Remove(FootballPitch footballPitch);
-    Task UpdateAsync(int footballPiatchId, FootballPitch footballPitch);
+    Task Update(int footballPiatchId, FootballPitch footballPitch);
 }

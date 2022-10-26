@@ -43,9 +43,9 @@ internal sealed class FootballPitchesRepository : IFootballPitchesRepository
             .FirstOrDefaultAsync(fp => fp.Name.ToLower() == footballPitchName.ToLower().Trim(), cancellationToken);
     }
 
-    public async Task AddAsync(FootballPitch footballPitch, CancellationToken cancellationToken = default)
+    public async Task Add(FootballPitch footballPitch)
     {
-        await _dbContext.FootballPitches.AddAsync(footballPitch, cancellationToken);
+        await _dbContext.FootballPitches.AddAsync(footballPitch);
     }
 
     public void Remove(FootballPitch footballPitch)
@@ -53,7 +53,7 @@ internal sealed class FootballPitchesRepository : IFootballPitchesRepository
         _dbContext.FootballPitches.Remove(footballPitch);
     }
 
-    public async Task UpdateAsync(int footballPiatchId, FootballPitch footballPitch)
+    public async Task Update(int footballPiatchId, FootballPitch footballPitch)
     {
         var searchedFootballPitch = await _dbContext.FootballPitches
             .FirstOrDefaultAsync(pitch => pitch.Id == footballPiatchId);

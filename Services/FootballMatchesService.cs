@@ -7,15 +7,17 @@ using Services.Abstractions;
 
 namespace Services;
 
-public class FootballMatchesService : IFootballMatchesService
+public sealed class FootballMatchesService : IFootballMatchesService
 {
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
+    private readonly IUserContextService _userContextService;
 
-    public FootballMatchesService(IRepositoryManager repositoryManager, IMapper mapper)
+    public FootballMatchesService(IRepositoryManager repositoryManager, IMapper mapper, IUserContextService userContextService)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
+        _userContextService = userContextService;
     }
 
     public async Task<List<FootballMatchDto>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -39,7 +41,7 @@ public class FootballMatchesService : IFootballMatchesService
         var footballMatch = await _repositoryManager.FootballMatchesRepository
             .GetByIdAsync(footballMatchId, cancellationToken);
 
-        if(footballMatch is null)
+        if (footballMatch is null)
         {
             throw new NotFoundException($"Football match with id {footballMatchId} cannot be found");
         }
@@ -47,14 +49,13 @@ public class FootballMatchesService : IFootballMatchesService
         return _mapper.Map<FootballMatchDto>(footballMatch);
     }
 
-    public async Task<int> AddAsync(AddFootballMatchDto dto, CancellationToken cancellationToken = default)
+    public async Task<int> Add(AddFootballMatchDto dto)
     {
         var footballMatch = _mapper.Map<FootballMatch>(dto);
 
-        //TODO: User Id from userContextService
-        footballMatch.CreatorId = 2;
+        footballMatch.CreatorId = _userContextService.GetUserId;
         footballMatch.IsActive = true;
-        footballMatch.CreatedAt = DateTime.UtcNow;
+        footballMatch.CreatedAt = DateTime.Now;
 
         foreach (var playerId in dto.PlayersIds.Distinct())
         {
@@ -62,29 +63,31 @@ public class FootballMatchesService : IFootballMatchesService
         }
 
         await _repositoryManager.FootballMatchesRepository
-            .AddAsync(footballMatch, cancellationToken);
+            .Add(footballMatch);
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
         return footballMatch.Id;
     }
 
-    public async Task RemoveByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    public async Task RemoveById(int footballMatchId)
     {
-        await GetByIdAsync(footballMatchId, cancellationToken);
+        await _repositoryManager.FootballMatchesRepository.RemoveById(footballMatchId);
 
-        await _repositoryManager.FootballMatchesRepository.RemoveByIdAsync(footballMatchId, cancellationToken);
-
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(int footballMatchId, UpdateFootballMatchDto dto, CancellationToken cancellationToken = default)
+    public async Task Update(int footballMatchId, UpdateFootballMatchDto dto)
     {
-        var footballMatchDto = await GetByIdAsync(footballMatchId, cancellationToken);
-
         await _repositoryManager.FootballMatchesRepository
-            .UpdateAsync(footballMatchId, _mapper.Map<FootballMatch>(footballMatchDto));
+            .Update(footballMatchId, _mapper.Map<FootballMatch>(dto));
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    {
+        return await _repositoryManager.FootballMatchesRepository
+            .GetCreatorIdAsync(footballMatchId, cancellationToken);
     }
 }

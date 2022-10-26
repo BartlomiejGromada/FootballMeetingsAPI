@@ -1,6 +1,7 @@
 ﻿using Contracts.Models.Account;
 using Contracts.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -12,9 +13,11 @@ namespace Presentation.Controllers.v1;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
-    public AccountController(IAccountService accountService)
+    private readonly IUsersService _usersService;
+    public AccountController(IAccountService accountService, IUsersService usersService)
     {
         _accountService = accountService;
+        _usersService = usersService;
     }
 
     [HttpPost("register")]
@@ -28,24 +31,41 @@ public class AccountController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var userId = await _accountService.RegisterUserAsync(dto, cancellationToken);
+        var userId = await _accountService.RegisterUser(dto);
 
         return Created($"api/v1/account/{userId}", null);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult> LoginUser([FromBody] LoginUserDto dto, [FromServices] IValidator<LoginUserDto> validator,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult> LoginUser([FromBody] LoginUserDto dto, [FromServices] IValidator<LoginUserDto> validator)
     {
         var validationResult = validator.Validate(dto);
-        if(!validationResult.IsValid)
+        if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(this.ModelState);
             return BadRequest(this.ModelState);
         }
 
-        var jwtToken = await _accountService.GenerateJwtAsync(dto, cancellationToken);
+        var jwtToken = await _accountService.GenerateJwt(dto);
         return Ok(jwtToken);
     }
 
+
+    [HttpDelete("{id}")]
+    [Authorize]
+    public async Task<ActionResult> RemoveAccount([FromRoute] int id, [FromBody] PasswordDto dto)
+    {        
+        await _accountService.RemoveUserById(id, dto.Password);
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> RestoreAccount([FromRoute] int id)
+    {
+        await _accountService.RestoreUserById(id);
+
+        return NoContent();
+    }
 }

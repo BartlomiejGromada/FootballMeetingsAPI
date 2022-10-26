@@ -4,6 +4,8 @@ namespace Services.Abstractions;
 
 public interface IAccountService
 {
-    Task<int> RegisterUserAsync(RegisterUserDto dto, CancellationToken cancellationToken = default);
-    Task<string> GenerateJwtAsync(LoginUserDto dto, CancellationToken cancellationToken = default);
+    Task<int> RegisterUser(RegisterUserDto dto);
+    Task<string> GenerateJwt(LoginUserDto dto);
+    Task RemoveUserById(int userId, string password);
+    Task RestoreUserById(int userId);
 }

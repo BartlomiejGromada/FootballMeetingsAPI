@@ -13,38 +13,40 @@ using System.Text;
 
 namespace Services;
 
-public class AccountService : IAccountService
+public sealed class AccountService : IAccountService
 {
     private readonly IRepositoryManager _repositoryManager;
     private readonly IMapper _mapper;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly AuthenticationSettings _authenticationSettings;
+    private readonly IUserContextService _userContextService;
 
-    public AccountService(IRepositoryManager repositoryManager, IMapper mapper, IPasswordHasher<User> passwordHasher, 
-        AuthenticationSettings authenticationSettings)
+    public AccountService(IRepositoryManager repositoryManager, IMapper mapper, IPasswordHasher<User> passwordHasher,
+        AuthenticationSettings authenticationSettings, IUserContextService userContextService)
     {
         _repositoryManager = repositoryManager;
         _mapper = mapper;
         _passwordHasher = passwordHasher;
         _authenticationSettings = authenticationSettings;
+        _userContextService = userContextService;
     }
 
-    public async Task<int> RegisterUserAsync(RegisterUserDto dto, CancellationToken cancellationToken = default)
+    public async Task<int> RegisterUser(RegisterUserDto dto)
     {
         var user = _mapper.Map<User>(dto);
         user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
-        await _repositoryManager.UsersRepository.RegisterUserAsync(user, cancellationToken);
+        await _repositoryManager.AccountRepository.RegisterUser(user);
 
-        await _repositoryManager.UnitOfWork.SaveChangesAsync(cancellationToken);
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
         return user.Id;
     }
 
-    public async Task<string> GenerateJwtAsync(LoginUserDto dto, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateJwt(LoginUserDto dto)
     {
         var user = await _repositoryManager.UsersRepository
-            .GetUserByEmailAsync(dto.Email, cancellationToken);
+            .GetUserByEmailAsync(dto.Email);
 
         if (user == null)
         {
@@ -52,7 +54,7 @@ public class AccountService : IAccountService
         }
 
         var result = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
-        if(result == PasswordVerificationResult.Failed)
+        if (result == PasswordVerificationResult.Failed)
         {
             throw new BadRequestException("Invalid username or password");
         }
@@ -67,7 +69,7 @@ public class AccountService : IAccountService
             new Claim(JwtRegisteredClaimNames.Birthdate, user.DateOfBirth?.ToString("yyyy-MM-dd")),
             new Claim("Nickname", user.NickName),
         };
-        
+
         //create private key
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
 
@@ -91,5 +93,38 @@ public class AccountService : IAccountService
         return tokenHandler.WriteToken(token);
     }
 
+    public async Task RemoveUserById(int userId, string password)
+    {
+        var user = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId);
+        if (user is null)
+        {
+            throw new NotFoundException($"User with id {userId} cannot be found");
+        }
 
+        var verifyPassword = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+        if (_userContextService.GetUserRole != "Admin" &&
+            (_userContextService.GetUserId != user.Id || 
+            (_userContextService.GetUserId == user.Id && verifyPassword == PasswordVerificationResult.Failed))
+           )
+        {
+            throw new ForbidException();
+        }
+
+        await _repositoryManager.AccountRepository.RemoveUserById(userId);
+
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
+
+    public async Task RestoreUserById(int userId)
+    {
+        var user = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId, isActive: false);
+        if (user is null)
+        {
+            throw new NotFoundException($"Inactive user with id {userId} cannot be found");
+        }
+
+        await _repositoryManager.AccountRepository.RestoreUserById(userId);
+
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
 }
