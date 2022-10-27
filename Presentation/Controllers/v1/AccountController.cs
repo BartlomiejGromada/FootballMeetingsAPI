@@ -2,6 +2,7 @@
 using Contracts.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -51,20 +52,20 @@ public class AccountController : ControllerBase
     }
 
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{accountId}")]
     [Authorize]
-    public async Task<ActionResult> RemoveAccount([FromRoute] int id, [FromBody] PasswordDto dto)
+    public async Task<ActionResult> RemoveAccount([FromRoute] int accountId, [FromBody] PasswordDto dto)
     {        
-        await _accountService.RemoveUserById(id, dto.Password);
+        await _accountService.RemoveUserById(accountId, dto.Password);
 
         return NoContent();
     }
 
-    [HttpPut("{id}")]
+    [HttpPatch("{accountId}")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult> RestoreAccount([FromRoute] int id)
+    public async Task<ActionResult> UpdateAccountPatch([FromRoute] int accountId, [FromBody] JsonPatchDocument user)
     {
-        await _accountService.RestoreUserById(id);
+        await _accountService.UpdateAccountPatch(accountId, user);
 
         return NoContent();
     }

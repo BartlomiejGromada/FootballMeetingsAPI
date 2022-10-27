@@ -39,7 +39,6 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .Include(fm => fm.FootballPitch)
             .Include(fm => fm.Creator)
             .Where(fm => fm.IsActive)
-            .AsNoTracking()
             .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
     }
     public async Task Add(FootballMatch footballMatch)
@@ -79,5 +78,28 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
 
         return result.CreatorId;
+    }
+
+    public async Task SignUpForMatch(int footballMatchId, int playerId)
+    {
+        var footballMatch = await _dbContext.FootballMatches
+            .Include(fm => fm.Players)
+            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
+
+        var newPlayer = new User() { Id = playerId };
+        _dbContext.Entry(newPlayer).State = EntityState.Unchanged;
+        footballMatch.Players.Add(newPlayer);
+    }
+
+    public async Task SignOffFromMatch(int footballMatchId, int playerId)
+    {
+        var footballMatch = await _dbContext.FootballMatches
+            .Include(fm => fm.Players)
+            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
+
+        var player = await _dbContext.Users
+            .FirstOrDefaultAsync(user => user.Id == playerId);
+
+        footballMatch.Players.Remove(player);
     }
 }

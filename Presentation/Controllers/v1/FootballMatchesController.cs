@@ -31,20 +31,11 @@ public class FootballMatchesController : ControllerBase
         return Ok(footballMatches);
     }
 
-    //[HttpGet("")]
-    //public async Task<ActionResult<List<FootballMatchDto>>> GetAllByCreatorId(CancellationToken cancellationToken = default)
-    //{
-    //	var testId = 1;
-    //	var footballMatches = await _footballMatchesService.GetAllByCreatorIdAsync(testId, cancellationToken);
-
-    //	return Ok(footballMatches);
-    //}
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<FootballMatchDto>> GetById([FromRoute] int id,
+    [HttpGet("{footballMatchId}")]
+    public async Task<ActionResult<FootballMatchDto>> GetById([FromRoute] int footballMatchId,
         CancellationToken cancellationToken = default)
     {
-        var footballMatch = await _footballMatchesService.GetByIdAsync(id, cancellationToken);
+        var footballMatch = await _footballMatchesService.GetByIdAsync(footballMatchId, cancellationToken);
 
         return Ok(footballMatch);
     }
@@ -66,11 +57,11 @@ public class FootballMatchesController : ControllerBase
         return Created($"api/v1/football-match/{footballMatchId}", null);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballMatchDto dto,
+    [HttpPut("{footballMatchId}")]
+    public async Task<ActionResult> Update([FromRoute] int footballMatchId, UpdateFootballMatchDto dto,
         [FromServices] IValidator<UpdateFootballMatchDto> validator, CancellationToken cancellationToken = default)
     {
-        var footballMatch = await _footballMatchesService.GetByIdAsync(id, cancellationToken);
+        var footballMatch = await _footballMatchesService.GetByIdAsync(footballMatchId, cancellationToken);
         if(_userContextService.GetUserRole != "Admin" && footballMatch.Creator.Id != _userContextService.GetUserId)
         {
             return new ForbidResult();
@@ -83,22 +74,38 @@ public class FootballMatchesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        await _footballMatchesService.Update(id, dto);
+        await _footballMatchesService.Update(footballMatchId, dto);
 
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveById([FromRoute] int id, CancellationToken cancellationToken = default)
+    [HttpDelete("{footballMatchId}")]
+    public async Task<ActionResult> RemoveById([FromRoute] int footballMatchId, CancellationToken cancellationToken = default)
     {
-        var footballMatch = await _footballMatchesService.GetByIdAsync(id, cancellationToken);
+        var footballMatch = await _footballMatchesService.GetByIdAsync(footballMatchId, cancellationToken);
         if(_userContextService.GetUserRole != "Admin" && footballMatch.Creator.Id != _userContextService.GetUserId)
         {
             return new ForbidResult();
         }
 
-        await _footballMatchesService.RemoveById(id);
+        await _footballMatchesService.RemoveById(footballMatchId);
 
         return NoContent();
+    }
+
+    [HttpPost("{footballMatchId}/players/{playerId}")]
+    public async Task<ActionResult> SingUpForMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
+    {
+        await _footballMatchesService.SingUpForMatch(footballMatchId, playerId);
+
+        return Ok();
+    }
+
+    [HttpDelete("{footballMatchId}/players/{playerId}")]
+    public async Task<ActionResult> SignOffFromMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
+    {
+        await _footballMatchesService.SignOffFromMatch(footballMatchId, playerId);
+
+        return Ok();
     }
 }

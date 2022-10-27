@@ -32,14 +32,12 @@ internal sealed class FootballPitchesRepository : IFootballPitchesRepository
     public async Task<FootballPitch> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.FootballPitches
-            .AsNoTracking()
             .FirstOrDefaultAsync(footballPitch => footballPitch.Id == footballPitchId, cancellationToken);
     }
 
     public async Task<FootballPitch> GetByNameAsync(string footballPitchName, CancellationToken cancellationToken = default)
     {
         return await _dbContext.FootballPitches
-            .AsNoTracking()
             .FirstOrDefaultAsync(fp => fp.Name.ToLower() == footballPitchName.ToLower().Trim(), cancellationToken);
     }
 

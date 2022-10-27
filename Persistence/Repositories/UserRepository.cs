@@ -22,7 +22,6 @@ internal sealed class UsersRepository : IUsersRepository
     public async Task<User> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
-            .AsNoTracking()
             .Include(u => u.Role)
             .FirstOrDefaultAsync(user => user.Email.ToLower() == email.ToLower() && user.IsActive, cancellationToken);
     }
@@ -30,7 +29,6 @@ internal sealed class UsersRepository : IUsersRepository
     public async Task<User> GetUserByIdAsync(int userId, bool isActive = true, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
-            .AsNoTracking()
             .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive == isActive, cancellationToken);
     }
 }

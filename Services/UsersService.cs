@@ -20,7 +20,7 @@ public sealed class UsersService : IUsersService
     public async Task<UserDto> GetByIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         var user = await _repositoryManager.UsersRepository
-            .GetUserByIdAsync(userId, cancellationToken);
+            .GetUserByIdAsync(userId, true, cancellationToken);
 
         if (user is null)
         {

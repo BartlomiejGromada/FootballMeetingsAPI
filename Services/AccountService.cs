@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
 using System.IdentityModel.Tokens.Jwt;
@@ -66,9 +67,12 @@ public sealed class AccountService : IAccountService
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
             new Claim(ClaimTypes.Role, user.Role.Name),
-            new Claim(JwtRegisteredClaimNames.Birthdate, user.DateOfBirth?.ToString("yyyy-MM-dd")),
             new Claim("Nickname", user.NickName),
         };
+        if(user.DateOfBirth != null)
+        {
+            claims.Add(new Claim(JwtRegisteredClaimNames.Birthdate, user.DateOfBirth?.ToString("yyyy-MM-dd")));
+        }
 
         //create private key
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
@@ -124,6 +128,19 @@ public sealed class AccountService : IAccountService
         }
 
         await _repositoryManager.AccountRepository.RestoreUserById(userId);
+
+        await _repositoryManager.UnitOfWork.SaveChangesAsync();
+    }
+
+    public async Task UpdateAccountPatch(int userId, JsonPatchDocument user)
+    {
+        var foundUser = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId);
+        if (foundUser is null)
+        {
+            throw new NotFoundException($"Inactive user with id {userId} cannot be found");
+        }
+
+        user.ApplyTo(foundUser);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }

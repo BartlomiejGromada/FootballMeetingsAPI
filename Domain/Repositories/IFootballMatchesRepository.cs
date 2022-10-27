@@ -11,4 +11,6 @@ public interface IFootballMatchesRepository
     Task RemoveById(int footballMatchId);
     Task Update(int footballMatchId, FootballMatch footballMatch);
     Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default);
+    Task SignUpForMatch(int footballMatchId, int playerId);
+    Task SignOffFromMatch(int footballMatchId, int playerId);
 }

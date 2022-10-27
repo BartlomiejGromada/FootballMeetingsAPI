@@ -31,10 +31,10 @@ public class FootballPitchesController : ControllerBase
         return Ok(footballPitches);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<FootballPitchDto>> GetById([FromRoute] int id, CancellationToken cancellationToken = default)
+    [HttpGet("{footballPitchId}")]
+    public async Task<ActionResult<FootballPitchDto>> GetById([FromRoute] int footballPitchId, CancellationToken cancellationToken = default)
     {
-        var footballPitch = await _footballPitchesService.GetByIdAsync(id, cancellationToken);
+        var footballPitch = await _footballPitchesService.GetByIdAsync(footballPitchId, cancellationToken);
 
         return Ok(footballPitch);
     }
@@ -56,15 +56,15 @@ public class FootballPitchesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = footballPitchId }, null);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{footballPitchId}")]
     [Authorize(Roles = "Admin, Creator")]
-    public async Task<ActionResult> Update([FromRoute] int id, UpdateFootballPitchDto dto,
+    public async Task<ActionResult> Update([FromRoute] int footballPitchId, UpdateFootballPitchDto dto,
         [FromServices] IValidator<UpdateFootballPitchDto> validator)
     {
         var validationResult = validator.Validate(dto);
         try
         {
-            await _footballPitchesService.Update(id, dto);
+            await _footballPitchesService.Update(footballPitchId, dto);
         }
         catch (FootballPitchNameIsAlreadyTakenException exception)
         {
@@ -81,10 +81,10 @@ public class FootballPitchesController : ControllerBase
     }
 
     [Authorize(Roles = "Admin, Creator")]
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveById([FromRoute] int id)
+    [HttpDelete("{footballPitchId}")]
+    public async Task<ActionResult> RemoveById([FromRoute] int footballPitchId)
     {
-        await _footballPitchesService.RemoveById(id);
+        await _footballPitchesService.RemoveById(footballPitchId);
 
         return NoContent();
     }
