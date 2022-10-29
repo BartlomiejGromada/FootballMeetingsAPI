@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
-internal sealed class AccountRepository : IAccountRepository
+internal sealed class AccountsRepository : IAccountsRepository
 {
     private readonly FootballMeetingsDbContext _dbContext;
 
-    public AccountRepository(FootballMeetingsDbContext dbContext)
+    public AccountsRepository(FootballMeetingsDbContext dbContext)
     {
         _dbContext = dbContext;
     }

@@ -1,0 +1,6 @@
+﻿namespace Contracts.Models.Comments;
+
+public class UpdateCommentDto
+{
+    public string Content { get; set; }
+}

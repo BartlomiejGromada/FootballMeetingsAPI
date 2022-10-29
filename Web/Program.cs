@@ -45,6 +45,7 @@ builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();

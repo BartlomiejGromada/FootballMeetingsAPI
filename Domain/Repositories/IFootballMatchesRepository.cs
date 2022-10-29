@@ -13,4 +13,6 @@ public interface IFootballMatchesRepository
     Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default);
     Task SignUpForMatch(int footballMatchId, int playerId);
     Task SignOffFromMatch(int footballMatchId, int playerId);
+    Task<bool> ExistsAsync(int footballMatchId, CancellationToken cancellationToken = default);
+    Task<bool> ExistsPlayerInFootballMatchAsync(int footballMatchId, int playerId, CancellationToken cancellationToken = default);
 }

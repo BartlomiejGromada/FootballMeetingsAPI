@@ -12,8 +12,8 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
         builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETDATE()");
 
         builder.HasOne(c => c.User)
-            .WithOne()
-            .HasForeignKey<Comment>(c => c.UserId);
+            .WithMany()
+            .HasForeignKey(c => c.UserId);
 
         builder.HasOne(c => c.FootballMatch)
             .WithMany(fm => fm.Comments)

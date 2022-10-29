@@ -102,4 +102,22 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
 
         footballMatch.Players.Remove(player);
     }
+
+    public async Task<bool> ExistsAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.FootballMatches
+            .AnyAsync(fm => fm.Id == footballMatchId, cancellationToken);
+    }
+
+    public async Task<bool> ExistsPlayerInFootballMatchAsync(int footballMatchId, int playerId, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.FootballMatches
+            .Include(fm => fm.Players)
+            .Select(fm => new
+            {
+                fm.Id,
+                fm.Players
+            })
+            .AnyAsync(item => item.Id == footballMatchId && item.Players.Any(player => player.Id == playerId), cancellationToken);
+    }
 }

@@ -37,7 +37,7 @@ public sealed class AccountService : IAccountService
         var user = _mapper.Map<User>(dto);
         user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
-        await _repositoryManager.AccountRepository.RegisterUser(user);
+        await _repositoryManager.AccountsRepository.RegisterUser(user);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
 
@@ -114,7 +114,7 @@ public sealed class AccountService : IAccountService
             throw new ForbidException();
         }
 
-        await _repositoryManager.AccountRepository.RemoveUserById(userId);
+        await _repositoryManager.AccountsRepository.RemoveUserById(userId);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
@@ -127,7 +127,7 @@ public sealed class AccountService : IAccountService
             throw new NotFoundException($"Inactive user with id {userId} cannot be found");
         }
 
-        await _repositoryManager.AccountRepository.RestoreUserById(userId);
+        await _repositoryManager.AccountsRepository.RestoreUserById(userId);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }

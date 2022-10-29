@@ -1,4 +1,5 @@
-﻿using Contracts.Models.FootballPitch;
+﻿using Contracts.Models.Comments;
+using Contracts.Models.FootballPitch;
 using Contracts.Models.User;
 
 namespace Contracts.Models.FootballMatch;

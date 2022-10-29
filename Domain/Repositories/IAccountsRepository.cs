@@ -2,7 +2,7 @@
 
 namespace Domain.Repositories;
 
-public interface IAccountRepository
+public interface IAccountsRepository
 {
     Task<int> RegisterUser(User user);
     Task RemoveUserById(int userId);
