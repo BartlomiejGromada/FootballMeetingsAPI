@@ -20,9 +20,9 @@ public sealed class UsersService : IUsersService
     public async Task<UserDto> GetByIdAsync(int userId, CancellationToken cancellationToken = default)
     {
         var user = await _repositoryManager.UsersRepository
-            .GetUserByIdAsync(userId, true, cancellationToken);
+            .GetUserByIdAsync(userId, isActive: true, cancellationToken);
 
-        if (user is null)
+        if (user == null)
         {
             throw new NotFoundException($"User with id {userId} cannot be found");
         }

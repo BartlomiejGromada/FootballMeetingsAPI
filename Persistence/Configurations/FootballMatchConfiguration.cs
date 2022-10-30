@@ -11,6 +11,8 @@ public class FootballMatchConfiguration : IEntityTypeConfiguration<FootballMatch
         builder.Property(fm => fm.Name).IsRequired();
         builder.Property(fm => fm.CreatedAt).HasDefaultValueSql("GETDATE()");
 
+        builder.HasQueryFilter(fm => fm.IsActive);
+
         builder.HasOne(fm => fm.FootballPitch)
             .WithMany(fp => fp.FootballMatches)
             .HasForeignKey(fm => fm.FootballPitchId);

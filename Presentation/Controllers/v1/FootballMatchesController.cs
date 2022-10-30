@@ -54,7 +54,7 @@ public class FootballMatchesController : ControllerBase
 
         var footballMatchId = await _footballMatchesService.Add(dto);
 
-        return Created($"api/v1/football-match/{footballMatchId}", null);
+        return CreatedAtAction(nameof(GetById), new { footballMatchId }, null);
     }
 
     [HttpPut("{footballMatchId}")]

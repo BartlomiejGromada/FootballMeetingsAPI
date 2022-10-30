@@ -16,7 +16,7 @@ public class RegisterUserValidator : AbstractValidator<RegisterUserDto>
 			if (!string.IsNullOrEmpty(value))
 			{
 				var user = await repositoryManager.UsersRepository.GetUserByEmailAsync(value, cancellationToken);
-				if (user is not null)
+				if (user != null)
 				{
 					context.AddFailure("Email", "That email is taken");
 				}

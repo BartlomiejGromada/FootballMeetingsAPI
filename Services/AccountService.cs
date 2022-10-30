@@ -100,7 +100,7 @@ public sealed class AccountService : IAccountService
     public async Task RemoveUserById(int userId, string password)
     {
         var user = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId);
-        if (user is null)
+        if (user == null)
         {
             throw new NotFoundException($"User with id {userId} cannot be found");
         }
@@ -121,8 +121,8 @@ public sealed class AccountService : IAccountService
 
     public async Task RestoreUserById(int userId)
     {
-        var user = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId, isActive: false);
-        if (user is null)
+        var userExists = await _repositoryManager.UsersRepository.ExistsDeletedUser(userId);
+        if (!userExists)
         {
             throw new NotFoundException($"Inactive user with id {userId} cannot be found");
         }
@@ -134,8 +134,8 @@ public sealed class AccountService : IAccountService
 
     public async Task UpdateAccountPatch(int userId, JsonPatchDocument user)
     {
-        var foundUser = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId);
-        if (foundUser is null)
+        var foundUser = await _repositoryManager.UsersRepository.GetUserByIdAsync(userId, isActive: false);
+        if (foundUser == null)
         {
             throw new NotFoundException($"Inactive user with id {userId} cannot be found");
         }

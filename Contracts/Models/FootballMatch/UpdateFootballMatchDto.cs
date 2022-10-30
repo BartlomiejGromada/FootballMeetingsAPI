@@ -7,4 +7,5 @@ public class UpdateFootballMatchDto
     public DateTime Date { get; set; }
     public int FootballPitchId { get; set; }
     public List<int> PlayersIds { get; set; }
+    public List<int> PlayersIdsToDelete { get; set; }
 }

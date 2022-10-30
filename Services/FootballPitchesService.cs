@@ -31,7 +31,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
        var footballPitch = await _repositoryManager.FootballPitchesRepository
             .GetByIdAsync(footballPitchId, cancellationToken);
     
-       if(footballPitch is null)
+       if(footballPitch == null)
         {
             throw new NotFoundException($"Football pitch with id {footballPitchId} cannot be found");
         }

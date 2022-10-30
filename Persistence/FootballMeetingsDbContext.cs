@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Persistence;
 
@@ -8,6 +9,7 @@ public sealed class FootballMeetingsDbContext : DbContext
 {
     public FootballMeetingsDbContext(DbContextOptions<FootballMeetingsDbContext> options) : base(options)
     {
+        
     }
 
     public DbSet<User> Users { get; set; }
@@ -28,8 +30,8 @@ public static class Extensions
     {
         serviceCollection.AddDbContext<FootballMeetingsDbContext>(option =>
         {
-            option.UseSqlServer(connectionString);
+            option.UseSqlServer(connectionString)
+                  .LogTo(Console.WriteLine, LogLevel.Information);
         });
-
     }
 }

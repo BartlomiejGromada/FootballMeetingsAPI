@@ -51,5 +51,22 @@ public class UpdateFootballMatchValidator : AbstractValidator<UpdateFootballMatc
                 context.AddFailure("Players", $"Invalid players ids: {string.Join(",", invalidPlayersIds)}");
             }
         });
+
+        RuleFor(fm => fm.PlayersIdsToDelete).CustomAsync(async (playersToDeleteIds, context, cancellationToken) =>
+        {
+            var invalidPlayersToDeleteIds = new List<int>();
+            foreach (var playerId in playersToDeleteIds)
+            {
+                var existsUser = await repositoryManager.UsersRepository.ExistsByIdAsync(playerId, cancellationToken);
+                if (!existsUser)
+                {
+                    invalidPlayersToDeleteIds.Add(playerId);
+                }
+            }
+            if (invalidPlayersToDeleteIds.Any())
+            {
+                context.AddFailure("PlayersToDelete", $"Invalid players to delete ids: {string.Join(",", invalidPlayersToDeleteIds)}");
+            }
+        });
     }
 }

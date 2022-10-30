@@ -57,7 +57,7 @@ public class CommentsController : ControllerBase
 	[HttpDelete("{commentId}")]
 	public async Task<ActionResult> Delete([FromRoute] int footballMatchId, [FromRoute] int commentId)
 	{
-		await _commentsService.Delete(int footballMatchId, int commentId);
+		await _commentsService.Delete(footballMatchId, commentId);
 
 		return NoContent();
 	}

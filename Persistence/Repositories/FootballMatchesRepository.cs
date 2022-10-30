@@ -16,7 +16,6 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .Include(fm => fm.Players)
             .Include(fm => fm.FootballPitch)
             .Include(fm => fm.Creator)
-            .Where(fm => fm.IsActive)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
@@ -27,7 +26,7 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .Include(fm => fm.Players)
             .Include(fm => fm.FootballPitch)
             .Include(fm => fm.Creator)
-            .Where(fm => fm.CreatorId == creatorId && fm.IsActive)
+            .Where(fm => fm.CreatorId == creatorId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
@@ -38,7 +37,6 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .Include(fm => fm.Players)
             .Include(fm => fm.FootballPitch)
             .Include(fm => fm.Creator)
-            .Where(fm => fm.IsActive)
             .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
     }
     public async Task Add(FootballMatch footballMatch)
@@ -119,5 +117,25 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
                 fm.Players
             })
             .AnyAsync(item => item.Id == footballMatchId && item.Players.Any(player => player.Id == playerId), cancellationToken);
+    }
+
+    public async Task DeletePlayerFromMatch(int footballMatchId, int playerId)
+    {
+        var footballMatch = await _dbContext.FootballMatches
+            .Include(fm => fm.Players)
+            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
+
+        var playerToDelete = footballMatch.Players.FirstOrDefault(player => player.Id == playerId);
+
+        footballMatch.Players.Remove(playerToDelete);
+    }
+
+    public async Task<int?> GetMaxNumberOfPlayersAsync(int footballMatchId, CancellationToken cancellationToken = default)
+    {
+        var result = await _dbContext.FootballMatches
+            .Select(fm => new { fm.Id, fm.MaxNumberOfPlayers })
+            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId, cancellationToken);
+
+        return result.MaxNumberOfPlayers;
     }
 }

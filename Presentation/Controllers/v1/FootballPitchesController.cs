@@ -4,6 +4,7 @@ using Domain.Exceptions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -41,29 +42,43 @@ public class FootballPitchesController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin, Creator")]
-    public async Task<ActionResult> Add([FromBody] AddFootballPitchDto dto, [FromServices] IValidator<AddFootballPitchDto> validator,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult> Add([FromForm] AddFootballPitchDto dto, IFormFile image,
+        [FromServices] IValidator<AddFootballPitchDto> validator)
     {
-        var validationResult = await validator.ValidateAsync(dto, cancellationToken);
+        var validationResult = await validator.ValidateAsync(dto);
         if (!validationResult.IsValid)
         {
             validationResult.AddToModelState(ModelState);
             return BadRequest(ModelState);
         }
 
+        if (image != null)
+        {
+            using var memoryStream = new MemoryStream();
+            await image.CopyToAsync(memoryStream);
+            dto.Image = memoryStream.ToArray();
+        }
+
         var footballPitchId = await _footballPitchesService.Add(dto);
 
-        return CreatedAtAction(nameof(GetById), new { id = footballPitchId }, null);
+        return CreatedAtAction(nameof(GetById), new { footballPitchId }, null);
     }
 
     [HttpPut("{footballPitchId}")]
     [Authorize(Roles = "Admin, Creator")]
-    public async Task<ActionResult> Update([FromRoute] int footballPitchId, UpdateFootballPitchDto dto,
+    public async Task<ActionResult> Update([FromRoute] int footballPitchId, UpdateFootballPitchDto dto, IFormFile image,
         [FromServices] IValidator<UpdateFootballPitchDto> validator)
     {
         var validationResult = validator.Validate(dto);
         try
         {
+            if (image != null)
+            {
+                using var memoryStream = new MemoryStream();
+                await image.CopyToAsync(memoryStream);
+                dto.Image = memoryStream.ToArray();
+            }
+
             await _footballPitchesService.Update(footballPitchId, dto);
         }
         catch (FootballPitchNameIsAlreadyTakenException exception)

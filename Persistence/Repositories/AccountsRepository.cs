@@ -23,7 +23,7 @@ internal sealed class AccountsRepository : IAccountsRepository
     public async Task RemoveUserById(int userId)
     {
         var user = await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive);
+            .FirstOrDefaultAsync(user => user.Id == userId);
 
         user.IsActive = false;
     }
@@ -31,6 +31,7 @@ internal sealed class AccountsRepository : IAccountsRepository
     public async Task RestoreUserById(int userId)
     {
         var user = await _dbContext.Users
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(user => user.Id == userId && user.IsActive == false);
 
         user.IsActive = true;

@@ -11,7 +11,6 @@ using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.Validators;
-using System.Text.Json.Serialization;
 using Web.Extensions;
 using Web.Middlewares;
 
@@ -20,8 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddNewtonsoftJson()
-    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -29,7 +29,7 @@ public static class UserSeed
                 Email = "jankowalski@gmail.com",
                 Password = "ADnOPPD5JSDzdd91SnZSJ2M1UIXTX91pWH8dcLeFqxHUHDrRHg+4lWgqk3pAarUTdg==",
                 FirstName = "Jan",
-                LastName = "Kowalsk",
+                LastName = "Kowalski",
                 DateOfBirth = null,
                 NickName = "Kowal",
                 CreatedAt = DateTime.Now,

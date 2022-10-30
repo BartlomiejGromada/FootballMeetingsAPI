@@ -14,6 +14,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.FirstName).HasMaxLength(150);
         builder.Property(u => u.LastName).HasMaxLength(200);
 
+        builder.HasQueryFilter(u => u.IsActive);
+
         builder.HasOne(u => u.Role)
             .WithMany()
             .HasForeignKey(u => u.RoleId);

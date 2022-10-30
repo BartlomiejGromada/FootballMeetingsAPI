@@ -41,7 +41,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
         var footballMatch = await _repositoryManager.FootballMatchesRepository
             .GetByIdAsync(footballMatchId, cancellationToken);
 
-        if (footballMatch is null)
+        if (footballMatch == null)
         {
             throw new NotFoundException($"Football match with id {footballMatchId} cannot be found");
         }
@@ -51,13 +51,22 @@ public sealed class FootballMatchesService : IFootballMatchesService
 
     public async Task<int> Add(AddFootballMatchDto dto)
     {
+        dto.PlayersIds = dto.PlayersIds
+            .Distinct()
+            .ToList();
+
+        if (dto.MaxNumberOfPlayers != null && dto.MaxNumberOfPlayers.Value < dto.PlayersIds.Count)
+        {
+            throw new MaximumNumberOfPlayersExceededException($"The maximum number of players has been exceeded");
+        }
+
         var footballMatch = _mapper.Map<FootballMatch>(dto);
 
         footballMatch.CreatorId = _userContextService.GetUserId;
         footballMatch.IsActive = true;
         footballMatch.CreatedAt = DateTime.Now;
 
-        foreach (var playerId in dto.PlayersIds.Distinct())
+        foreach (var playerId in dto.PlayersIds)
         {
             footballMatch.Players.Add(new User() { Id = playerId });
         }
@@ -79,8 +88,41 @@ public sealed class FootballMatchesService : IFootballMatchesService
 
     public async Task Update(int footballMatchId, UpdateFootballMatchDto dto)
     {
+        var footballMatch = await _repositoryManager.FootballMatchesRepository.GetByIdAsync(footballMatchId);
+
+        dto.PlayersIds = dto.PlayersIds
+            .Where(id => !dto.PlayersIdsToDelete.Contains(id))
+            .ToList();
+
+        if (dto.MaxNumberOfPlayers != null && dto.MaxNumberOfPlayers.Value < (footballMatch.Players.Count + (dto.PlayersIds.Count - dto.PlayersIdsToDelete.Count)))
+        {
+            throw new MaximumNumberOfPlayersExceededException($"The maximum number of players has been exceeded");
+        }
+
+        #region Delete players from match
+        foreach (var playerIdToDelete in dto.PlayersIdsToDelete)
+        {
+            var playerIsInMatch = footballMatch.Players.Any(player => dto.PlayersIdsToDelete.Contains(player.Id));
+            if(playerIsInMatch)
+            {
+                await _repositoryManager.FootballMatchesRepository.DeletePlayerFromMatch(footballMatchId, playerIdToDelete);
+            }
+        }
+        #endregion
+
+        #region Add players to match
+        foreach (var playerId in dto.PlayersIds)
+        {
+            var playerIsInMatch = footballMatch.Players.Any(player => dto.PlayersIds.Contains(player.Id));
+            if (!playerIsInMatch)
+            {
+                await _repositoryManager.FootballMatchesRepository.SignUpForMatch(footballMatchId, playerId);
+            }
+        }
+        #endregion
+
         await _repositoryManager.FootballMatchesRepository
-            .Update(footballMatchId, _mapper.Map<FootballMatch>(dto));
+                .Update(footballMatchId, _mapper.Map<FootballMatch>(dto));
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
@@ -93,25 +135,25 @@ public sealed class FootballMatchesService : IFootballMatchesService
 
     public async Task SingUpForMatch(int footballMatchId, int playerId)
     {
-        if(_userContextService.GetUserRole != "Admin" && _userContextService.GetUserRole != "Creator" && 
+        if (_userContextService.GetUserRole != "Admin" && _userContextService.GetUserRole != "Creator" &&
             _userContextService.GetUserId != playerId)
         {
             throw new ForbidException();
         }
 
         var footballMatch = await _repositoryManager.FootballMatchesRepository.GetByIdAsync(footballMatchId);
-        if(footballMatch == null)
+        if (footballMatch == null)
         {
             throw new NotFoundException($"Football match with id {footballMatchId} cannot be found");
         }
 
         var userExists = await _repositoryManager.UsersRepository.ExistsByIdAsync(playerId);
-        if(!userExists)
+        if (!userExists)
         {
             throw new NotFoundException($"Player with id {playerId} cannot be found");
         }
 
-        if(footballMatch.Date < DateTime.Now)
+        if (footballMatch.Date < DateTime.Now)
         {
             throw new MatchAlreadyTakenPlaceExpcetion($"Match with id {footballMatchId} already taken place {footballMatch.Date:dd-MM-yyyy}");
         }
@@ -121,7 +163,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
             throw new PlayerIsAlreadySignedUpForMatchException($"Player with id {playerId} is already signed up for the match with id {footballMatchId}");
         }
 
-        if(footballMatch.MaxNumberOfPlayers != null && footballMatch.MaxNumberOfPlayers.Value == footballMatch.Players.Count)
+        if (footballMatch.MaxNumberOfPlayers != null && footballMatch.MaxNumberOfPlayers.Value == footballMatch.Players.Count)
         {
             throw new MaxNumberOfPlayersExceededException($"Max number of players {footballMatch.MaxNumberOfPlayers.Value} exceeded ");
         }
