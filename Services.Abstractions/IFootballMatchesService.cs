@@ -1,12 +1,14 @@
-﻿using Contracts.Models.FootballMatch;
+﻿using Contracts.Models;
+using Contracts.Models.FootballMatch;
 using Domain.Entities;
+using Sieve.Models;
 
 namespace Services.Abstractions;
 
 public interface IFootballMatchesService
 {
-    Task<List<FootballMatchDto>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<List<FootballMatchDto>> GetAllByCreatorIdAsync(int creatorId, CancellationToken cancellationToken = default);
+    Task<PagedResult<FootballMatchDto>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default);
+    Task<PagedResult<FootballMatchDto>> GetAllByCreatorIdAsync(SieveModel query, int creatorId, CancellationToken cancellationToken = default);
     Task<FootballMatchDto> GetByIdAsync(int footballMatchId, CancellationToken cancellationToken = default);
     Task<int> Add(AddFootballMatchDto dto);
     Task RemoveById(int footballMatchId);

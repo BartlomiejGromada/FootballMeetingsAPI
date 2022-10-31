@@ -4,8 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence;
 using Persistence.Seeds;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 namespace Web.Extensions;
@@ -95,19 +93,6 @@ public static class Extensions
         return serviceCollection;
     }
 
-    public static IServiceCollection ConfigureAuthorization(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddAuthorization(options =>
-        {
-            //options.AddPolicy("email", builder =>
-            //{
-            //    builder.RequireClaim(ClaimTypes.Email, "bartlomiejgromada97@gmail.com");
-            //});
-        });
-
-        return serviceCollection;
-    }
-
     public static WebApplication SeedData(this WebApplication webApplication)
     {
         using var scope = webApplication.Services.CreateScope();
@@ -118,5 +103,21 @@ public static class Extensions
         UserSeed.SeedData(dbContext);
 
         return webApplication;
+    }
+
+    public static IServiceCollection ConfigureCors(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        serviceCollection.AddCors(options =>
+        {
+            options.AddPolicy("FrontendClient", builder =>
+            {
+                builder
+                .AllowAnyOrigin() //allow any methods 
+                .AllowAnyHeader() //allow any header
+                .WithOrigins(configuration["AllowedOrigins"]); //origin which can send request to api
+            });
+        });
+
+        return serviceCollection;
     }
 }

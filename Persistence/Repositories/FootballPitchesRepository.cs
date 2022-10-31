@@ -1,14 +1,21 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace Persistence.Repositories;
 
 internal sealed class FootballPitchesRepository : IFootballPitchesRepository
 {
     private readonly FootballMeetingsDbContext _dbContext;
+    private readonly ISieveProcessor _sieveProcessor;
 
-    public FootballPitchesRepository(FootballMeetingsDbContext dbContext) => _dbContext = dbContext;
+    public FootballPitchesRepository(FootballMeetingsDbContext dbContext, ISieveProcessor sieveProcessor)
+    {
+        _dbContext = dbContext;
+        _sieveProcessor = sieveProcessor;
+    }
 
     public async Task<bool> ExistsByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
     {
@@ -22,11 +29,19 @@ internal sealed class FootballPitchesRepository : IFootballPitchesRepository
           .AnyAsync(footballPitch => footballPitch.Name.ToLower() == footballPitchName.ToLower().Trim(), cancellationToken);
     }
 
-    public async Task<IEnumerable<FootballPitch>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<FootballPitch>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.FootballPitches
+        return await _sieveProcessor
+            .Apply(query, _dbContext.FootballPitches)
             .AsNoTracking()
-            .ToListAsync(cancellationToken); 
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> GetCountAsync(SieveModel query, CancellationToken cancellationToken = default)
+    {
+        return await _sieveProcessor
+            .Apply(query, _dbContext.FootballPitches, applyFiltering: false, applySorting: false)
+            .CountAsync(cancellationToken);
     }
 
     public async Task<FootballPitch> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)

@@ -1,10 +1,12 @@
-﻿using Contracts.Models.FootballPitch;
+﻿using Contracts.Models;
+using Contracts.Models.FootballPitch;
+using Sieve.Models;
 
 namespace Services.Abstractions;
 
 public interface IFootballPitchesService
 {
-    Task<List<FootballPitchDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<PagedResult<FootballPitchDto>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default);
     Task<FootballPitchDto> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default);
     Task<int> Add(AddFootballPitchDto dto);
     Task RemoveById(int footballPitchId);

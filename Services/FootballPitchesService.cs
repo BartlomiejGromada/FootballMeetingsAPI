@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Contracts.Models;
 using Contracts.Models.FootballPitch;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
+using Sieve.Models;
 
 namespace Services;
 
@@ -18,12 +20,17 @@ public sealed class FootballPitchesService : IFootballPitchesService
         _mapper = mapper;
     }
 
-    public async Task<List<FootballPitchDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedResult<FootballPitchDto>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default)
     {
         var footballPitches = await _repositoryManager.FootballPitchesRepository
-            .GetAllAsync(cancellationToken);
+            .GetAllAsync(query, cancellationToken);
 
-        return _mapper.Map<List<FootballPitchDto>>(footballPitches);
+        var dtos = _mapper.Map<List<FootballPitchDto>>(footballPitches);
+
+        var totalCount = await _repositoryManager.FootballPitchesRepository
+            .GetCountAsync(query, cancellationToken);
+
+        return new PagedResult<FootballPitchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
     }
 
     public async Task<FootballPitchDto> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)

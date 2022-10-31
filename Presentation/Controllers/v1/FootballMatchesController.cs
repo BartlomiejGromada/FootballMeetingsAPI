@@ -4,6 +4,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Sieve.Models;
 
 namespace Presentation.Controllers.v1;
 
@@ -24,9 +25,9 @@ public class FootballMatchesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<FootballMatchDto>>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<FootballMatchDto>>> GetAll(SieveModel query, CancellationToken cancellationToken = default)
     {
-        var footballMatches = await _footballMatchesService.GetAllAsync(cancellationToken);
+        var footballMatches = await _footballMatchesService.GetAllAsync(query, cancellationToken);
 
         return Ok(footballMatches);
     }

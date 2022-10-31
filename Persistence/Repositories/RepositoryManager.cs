@@ -1,4 +1,5 @@
 ﻿using Domain.Repositories;
+using Sieve.Services;
 
 namespace Persistence.Repositories;
 
@@ -11,10 +12,10 @@ public sealed class RepositoryManager : IRepositoryManager
     private readonly Lazy<ICommentsRepository> _lazyCommentsRepository;
     private readonly Lazy<IUnitOfWork> _lazyUnitOfWork;
 
-    public RepositoryManager(FootballMeetingsDbContext dbContext)
+    public RepositoryManager(FootballMeetingsDbContext dbContext, ISieveProcessor sieveProcessor)
     {
-        _lazyFootballMatchesRepository = new Lazy<IFootballMatchesRepository>(() => new FootballMatchesRepository(dbContext));
-        _lazyFootballPitchesRepository = new Lazy<IFootballPitchesRepository>(() => new FootballPitchesRepository(dbContext));
+        _lazyFootballMatchesRepository = new Lazy<IFootballMatchesRepository>(() => new FootballMatchesRepository(dbContext, sieveProcessor));
+        _lazyFootballPitchesRepository = new Lazy<IFootballPitchesRepository>(() => new FootballPitchesRepository(dbContext, sieveProcessor));
         _lazyUsersRepository = new Lazy<IUsersRepository>(() => new UsersRepository(dbContext));
         _lazyAccountsRepository = new Lazy<IAccountsRepository>(() => new AccountsRepository(dbContext));
         _lazyCommentsRepository = new Lazy<ICommentsRepository>(() => new CommentsRepository(dbContext));

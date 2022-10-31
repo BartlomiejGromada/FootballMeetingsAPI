@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Contracts.Models;
 using Contracts.Models.FootballMatch;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
+using Sieve.Models;
 
 namespace Services;
 
@@ -20,20 +22,30 @@ public sealed class FootballMatchesService : IFootballMatchesService
         _userContextService = userContextService;
     }
 
-    public async Task<List<FootballMatchDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedResult<FootballMatchDto>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default)
     {
         var footballMatches = await _repositoryManager.FootballMatchesRepository
-            .GetAllAsync(cancellationToken);
+            .GetAllAsync(query, cancellationToken);
 
-        return _mapper.Map<List<FootballMatchDto>>(footballMatches);
+        var dtos = _mapper.Map<List<FootballMatchDto>>(footballMatches);
+
+        var totalCount = await _repositoryManager.FootballMatchesRepository
+         .GetCountAsync(query, null, cancellationToken);
+
+        return new PagedResult<FootballMatchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
     }
 
-    public async Task<List<FootballMatchDto>> GetAllByCreatorIdAsync(int creatorId, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<FootballMatchDto>> GetAllByCreatorIdAsync(SieveModel query, int creatorId, CancellationToken cancellationToken = default)
     {
         var footballMatches = await _repositoryManager.FootballMatchesRepository
-            .GetAllByCreatorIdAsync(creatorId, cancellationToken);
+            .GetAllByCreatorIdAsync(query, creatorId, cancellationToken);
 
-        return _mapper.Map<List<FootballMatchDto>>(footballMatches);
+        var dtos = _mapper.Map<List<FootballMatchDto>>(footballMatches);
+
+        var totalCount = await _repositoryManager.FootballMatchesRepository
+         .GetCountAsync(query, creatorId, cancellationToken);
+
+        return new PagedResult<FootballMatchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
     }
 
     public async Task<FootballMatchDto> GetByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)

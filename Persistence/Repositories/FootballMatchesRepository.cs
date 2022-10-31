@@ -1,34 +1,58 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace Persistence.Repositories;
 
 internal sealed class FootballMatchesRepository : IFootballMatchesRepository
 {
     private readonly FootballMeetingsDbContext _dbContext;
+    private readonly ISieveProcessor _sieveProcessor;
 
-    public FootballMatchesRepository(FootballMeetingsDbContext dbContext) => _dbContext = dbContext;
-
-    public async Task<IEnumerable<FootballMatch>> GetAllAsync(CancellationToken cancellationToken = default)
+    public FootballMatchesRepository(FootballMeetingsDbContext dbContext, ISieveProcessor sieveProcessor)
     {
-        return await _dbContext.FootballMatches
-            .Include(fm => fm.Players)
-            .Include(fm => fm.FootballPitch)
-            .Include(fm => fm.Creator)
+        _dbContext = dbContext;
+        _sieveProcessor = sieveProcessor;
+    }
+
+    public async Task<IEnumerable<FootballMatch>> GetAllAsync(SieveModel query, CancellationToken cancellationToken = default)
+    {
+        return await _sieveProcessor
+            .Apply(query, _dbContext.FootballMatches
+                .Include(fm => fm.Players)
+                .Include(fm => fm.FootballPitch)
+                .Include(fm => fm.Creator))
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<FootballMatch>> GetAllByCreatorIdAsync(int creatorId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<FootballMatch>> GetAllByCreatorIdAsync(SieveModel query, int creatorId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.FootballMatches
-            .Include(fm => fm.Players)
-            .Include(fm => fm.FootballPitch)
-            .Include(fm => fm.Creator)
+        return await _sieveProcessor
+            .Apply(query, _dbContext.FootballMatches
+                .Include(fm => fm.Players)
+                .Include(fm => fm.FootballPitch)
+                .Include(fm => fm.Creator))
             .Where(fm => fm.CreatorId == creatorId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> GetCountAsync(SieveModel query, int? creatorId = null, CancellationToken cancellationToken = default)
+    {
+        if(creatorId == null)
+        {
+            return await _sieveProcessor
+                .Apply(query, _dbContext.FootballMatches, applyFiltering: false, applySorting: false)
+                .CountAsync();
+        }
+
+        return await _sieveProcessor
+            .Apply(query, _dbContext.FootballMatches, applyFiltering: false, applySorting: false)
+            .Where(fm => fm.CreatorId == creatorId.Value)
+            .CountAsync();
     }
 
     public async Task<FootballMatch> GetByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)

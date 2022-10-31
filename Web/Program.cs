@@ -11,8 +11,11 @@ using Persistence.Repositories;
 using Services;
 using Services.Abstractions;
 using Services.Validators;
+using Sieve.Models;
+using Sieve.Services;
 using Web.Extensions;
 using Web.Middlewares;
+using Web.Sieve;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,7 +37,6 @@ builder.Services.AddDbContext(builder.Configuration.GetConnectionString("Footbal
 builder.Services.AddAutoMapper();
 
 builder.Services.ConfigureJwtAuthentication(builder.Configuration);
-builder.Services.ConfigureAuthorization();
 
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IAccountService, AccountService>();
@@ -44,7 +46,13 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
+
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.ConfigureCors(builder.Configuration);
+
+builder.Services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
+builder.Services.Configure<SieveOptions>(builder.Configuration.GetSection("Sieve"));
 
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
@@ -68,5 +76,7 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+app.UseCors("FrontendClient");
 
 app.SeedData().Run();

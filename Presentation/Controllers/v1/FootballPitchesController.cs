@@ -1,4 +1,5 @@
-﻿using Contracts.Models.FootballPitch;
+﻿using Contracts.Models;
+using Contracts.Models.FootballPitch;
 using Contracts.Validators;
 using Domain.Exceptions;
 using FluentValidation;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace Presentation.Controllers.v1;
 
@@ -18,16 +21,18 @@ namespace Presentation.Controllers.v1;
 public class FootballPitchesController : ControllerBase
 {
     private readonly IFootballPitchesService _footballPitchesService;
+    private readonly ISieveProcessor _sieveProcessor;
 
-    public FootballPitchesController(IFootballPitchesService footballPitchesService)
+    public FootballPitchesController(IFootballPitchesService footballPitchesService, ISieveProcessor sieveProcessor)
     {
         _footballPitchesService = footballPitchesService;
+        _sieveProcessor = sieveProcessor;
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<FootballPitchDto>>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<FootballPitchDto>>> GetAll([FromBody] SieveModel query, CancellationToken cancellationToken = default)
     {
-        var footballPitches = await _footballPitchesService.GetAllAsync(cancellationToken);
+        var footballPitches = await _footballPitchesService.GetAllAsync(query, cancellationToken);
 
         return Ok(footballPitches);
     }
