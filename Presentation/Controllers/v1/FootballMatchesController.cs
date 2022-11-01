@@ -2,6 +2,7 @@
 using Contracts.Validators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Sieve.Models;
@@ -94,19 +95,28 @@ public class FootballMatchesController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{footballMatchId}/players/{playerId}")]
-    public async Task<ActionResult> SingUpForMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
-    {
-        await _footballMatchesService.SingUpForMatch(footballMatchId, playerId);
+    //[HttpPost("{footballMatchId}/players/{playerId}")]
+    //public async Task<ActionResult> SingUpForMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
+    //{
+    //    await _footballMatchesService.SingUpForMatch(footballMatchId, playerId);
 
-        return Ok();
-    }
+    //    return Ok();
+    //}
 
-    [HttpDelete("{footballMatchId}/players/{playerId}")]
-    public async Task<ActionResult> SignOffFromMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
-    {
-        await _footballMatchesService.SignOffFromMatch(footballMatchId, playerId);
+    //[HttpDelete("{footballMatchId}/players/{playerId}")]
+    //public async Task<ActionResult> SignOffFromMatch([FromRoute] int footballMatchId, [FromRoute] int playerId)
+    //{
+    //    await _footballMatchesService.SignOffFromMatch(footballMatchId, playerId);
 
-        return Ok();
-    }
+    //    return Ok();
+    //}
+
+    //[HttpPatch("{footballMatchId}/players")]
+    //[Authorize(Roles = "Admin, Creator")]
+    //public async Task<ActionResult> ChangeOfPresence([FromRoute] int footballMatchId, [FromQuery] List<int> playersIds , [FromBody] JsonPatchDocument dto)
+    //{
+    //    await _footballMatchesService.ChangeOfPresence(footballMatchId, playersIds, dto);
+
+    //    return NoContent();
+    //}
 }

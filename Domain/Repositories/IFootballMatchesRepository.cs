@@ -13,10 +13,8 @@ public interface IFootballMatchesRepository
     Task RemoveById(int footballMatchId);
     Task Update(int footballMatchId, FootballMatch footballMatch);
     Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default);
-    Task SignUpForMatch(int footballMatchId, int playerId);
-    Task SignOffFromMatch(int footballMatchId, int playerId);
     Task<bool> ExistsAsync(int footballMatchId, CancellationToken cancellationToken = default);
     Task<bool> ExistsPlayerInFootballMatchAsync(int footballMatchId, int playerId, CancellationToken cancellationToken = default);
-    Task DeletePlayerFromMatch(int footballMatchId, int playerId);
+    //Task DeletePlayerFromMatch(int footballMatchId, int playerId);
     Task<int?> GetMaxNumberOfPlayersAsync(int footballMatchId, CancellationToken cancellationToken = default);
 }

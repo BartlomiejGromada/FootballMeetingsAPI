@@ -117,7 +117,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
             var playerIsInMatch = footballMatch.Players.Any(player => dto.PlayersIdsToDelete.Contains(player.Id));
             if(playerIsInMatch)
             {
-                await _repositoryManager.FootballMatchesRepository.DeletePlayerFromMatch(footballMatchId, playerIdToDelete);
+                await _repositoryManager.FootballMatchesPlayersRepository.SignOffFromMatch(footballMatchId, playerIdToDelete);
             }
         }
         #endregion
@@ -128,7 +128,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
             var playerIsInMatch = footballMatch.Players.Any(player => dto.PlayersIds.Contains(player.Id));
             if (!playerIsInMatch)
             {
-                await _repositoryManager.FootballMatchesRepository.SignUpForMatch(footballMatchId, playerId);
+                await _repositoryManager.FootballMatchesPlayersRepository.SignUpForMatch(footballMatchId, playerId);
             }
         }
         #endregion
@@ -143,80 +143,5 @@ public sealed class FootballMatchesService : IFootballMatchesService
     {
         return await _repositoryManager.FootballMatchesRepository
             .GetCreatorIdAsync(footballMatchId, cancellationToken);
-    }
-
-    public async Task SingUpForMatch(int footballMatchId, int playerId)
-    {
-        if (_userContextService.GetUserRole != "Admin" && _userContextService.GetUserRole != "Creator" &&
-            _userContextService.GetUserId != playerId)
-        {
-            throw new ForbidException();
-        }
-
-        var footballMatch = await _repositoryManager.FootballMatchesRepository.GetByIdAsync(footballMatchId);
-        if (footballMatch == null)
-        {
-            throw new NotFoundException($"Football match with id {footballMatchId} cannot be found");
-        }
-
-        var userExists = await _repositoryManager.UsersRepository.ExistsByIdAsync(playerId);
-        if (!userExists)
-        {
-            throw new NotFoundException($"Player with id {playerId} cannot be found");
-        }
-
-        if (footballMatch.Date < DateTime.Now)
-        {
-            throw new MatchAlreadyTakenPlaceExpcetion($"Match with id {footballMatchId} already taken place {footballMatch.Date:dd-MM-yyyy}");
-        }
-
-        if (footballMatch.Players.Any(player => player.Id == playerId))
-        {
-            throw new PlayerIsAlreadySignedUpForMatchException($"Player with id {playerId} is already signed up for the match with id {footballMatchId}");
-        }
-
-        if (footballMatch.MaxNumberOfPlayers != null && footballMatch.MaxNumberOfPlayers.Value == footballMatch.Players.Count)
-        {
-            throw new MaxNumberOfPlayersExceededException($"Max number of players {footballMatch.MaxNumberOfPlayers.Value} exceeded ");
-        }
-
-        await _repositoryManager.FootballMatchesRepository.SignUpForMatch(footballMatchId, playerId);
-
-        await _repositoryManager.UnitOfWork.SaveChangesAsync();
-    }
-
-    public async Task SignOffFromMatch(int footballMatchId, int playerId)
-    {
-        if (_userContextService.GetUserRole != "Admin" && _userContextService.GetUserRole != "Creator" &&
-            _userContextService.GetUserId != playerId)
-        {
-            throw new ForbidException();
-        }
-
-        var footballMatch = await _repositoryManager.FootballMatchesRepository.GetByIdAsync(footballMatchId);
-        if (footballMatch == null)
-        {
-            throw new NotFoundException($"Football match with id {footballMatchId} cannot be found");
-        }
-
-        var userExists = await _repositoryManager.UsersRepository.ExistsByIdAsync(playerId);
-        if (!userExists)
-        {
-            throw new NotFoundException($"Player with id {playerId} cannot be found");
-        }
-
-        if (footballMatch.Date < DateTime.Now)
-        {
-            throw new MatchAlreadyTakenPlaceExpcetion($"Match with id {footballMatchId} already taken place {footballMatch.Date:dd-MM-yyyy}");
-        }
-
-        if (footballMatch.Players.All(player => player.Id != playerId))
-        {
-            throw new PlayerHasNotSignedUpForMatchException($"Player with id {playerId} has not signed up for the match with id {footballMatchId}");
-        }
-
-        await _repositoryManager.FootballMatchesRepository.SignOffFromMatch(footballMatchId, playerId);
-
-        await _repositoryManager.UnitOfWork.SaveChangesAsync();
     }
 }

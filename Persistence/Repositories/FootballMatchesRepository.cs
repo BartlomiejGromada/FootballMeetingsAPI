@@ -102,29 +102,6 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
         return result.CreatorId;
     }
 
-    public async Task SignUpForMatch(int footballMatchId, int playerId)
-    {
-        var footballMatch = await _dbContext.FootballMatches
-            .Include(fm => fm.Players)
-            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
-
-        var newPlayer = new User() { Id = playerId };
-        _dbContext.Entry(newPlayer).State = EntityState.Unchanged;
-        footballMatch.Players.Add(newPlayer);
-    }
-
-    public async Task SignOffFromMatch(int footballMatchId, int playerId)
-    {
-        var footballMatch = await _dbContext.FootballMatches
-            .Include(fm => fm.Players)
-            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
-
-        var player = await _dbContext.Users
-            .FirstOrDefaultAsync(user => user.Id == playerId);
-
-        footballMatch.Players.Remove(player);
-    }
-
     public async Task<bool> ExistsAsync(int footballMatchId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.FootballMatches
@@ -143,16 +120,16 @@ internal sealed class FootballMatchesRepository : IFootballMatchesRepository
             .AnyAsync(item => item.Id == footballMatchId && item.Players.Any(player => player.Id == playerId), cancellationToken);
     }
 
-    public async Task DeletePlayerFromMatch(int footballMatchId, int playerId)
-    {
-        var footballMatch = await _dbContext.FootballMatches
-            .Include(fm => fm.Players)
-            .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
+    //public async Task DeletePlayerFromMatch(int footballMatchId, int playerId)
+    //{
+    //    var footballMatch = await _dbContext.FootballMatches
+    //        .Include(fm => fm.Players)
+    //        .FirstOrDefaultAsync(fm => fm.Id == footballMatchId);
 
-        var playerToDelete = footballMatch.Players.FirstOrDefault(player => player.Id == playerId);
+    //    var playerToDelete = footballMatch.Players.FirstOrDefault(player => player.Id == playerId);
 
-        footballMatch.Players.Remove(playerToDelete);
-    }
+    //    footballMatch.Players.Remove(playerToDelete);
+    //}
 
     public async Task<int?> GetMaxNumberOfPlayersAsync(int footballMatchId, CancellationToken cancellationToken = default)
     {

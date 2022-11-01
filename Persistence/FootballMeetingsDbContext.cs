@@ -15,6 +15,7 @@ public sealed class FootballMeetingsDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<FootballMatch> FootballMatches { get; set; }
+    public DbSet<FootballMatchPlayer> FootballMatchesPlayers { get; set; }
     public DbSet<FootballPitch> FootballPitches { get; set; }
     public DbSet<Comment> Comments { get; set; }
 

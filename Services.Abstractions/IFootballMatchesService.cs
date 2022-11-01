@@ -1,6 +1,6 @@
 ﻿using Contracts.Models;
 using Contracts.Models.FootballMatch;
-using Domain.Entities;
+using Microsoft.AspNetCore.JsonPatch;
 using Sieve.Models;
 
 namespace Services.Abstractions;
@@ -14,6 +14,4 @@ public interface IFootballMatchesService
     Task RemoveById(int footballMatchId);
     Task Update(int footballMatchId, UpdateFootballMatchDto dto);
     Task<int> GetCreatorIdAsync(int footballMatchId, CancellationToken cancellationToken = default);
-    Task SingUpForMatch(int footballMatchId, int playerId);
-    Task SignOffFromMatch(int footballMatchId, int playerId);
 }

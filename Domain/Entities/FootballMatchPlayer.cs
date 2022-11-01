@@ -8,5 +8,6 @@
         public int PlayerId { get; set; }
 
         public DateTime JoiningDate { get; set; }
+        public bool? WasPresent { get; set; }
     }
 }

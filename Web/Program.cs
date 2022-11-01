@@ -43,6 +43,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IFootballPitchesService, FootballPitchesService>();
 builder.Services.AddScoped<IFootballMatchesService, FootballMatchesService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IFootballMatchesPlayersService, FootballMatchesPlayersService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
