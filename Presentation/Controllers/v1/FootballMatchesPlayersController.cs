@@ -1,5 +1,4 @@
-﻿using Domain.Repositories;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -16,6 +15,14 @@ public class FootballMatchesPlayersController : ControllerBase
     public FootballMatchesPlayersController(IFootballMatchesPlayersService footballMatchesPlayersService)
     {
         _footballMatchesPlayersService = footballMatchesPlayersService;
+    }
+
+    [HttpGet("report")]
+    public async Task<IActionResult> GetReportFromMatch([FromRoute] int footballMatchId)
+    {
+        var (fileName, contentFile) = await _footballMatchesPlayersService.GetReporstFromMatch(footballMatchId);
+
+        return File(contentFile, @"application/vnd.ms-excel", fileName);
     }
 
     [HttpPost]

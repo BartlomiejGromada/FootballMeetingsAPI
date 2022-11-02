@@ -16,6 +16,11 @@ public class FootballMatchesPlayersRepository : IFootballMatchesPlayersRepositor
     public async Task<IEnumerable<FootballMatchPlayer>> GetAllByFootballMatchIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.FootballMatchesPlayers
+             .Include(fmp => fmp.Player)
+             .Include(fmp => fmp.FootballMatch)
+                .ThenInclude(fm => fm.FootballPitch)
+             .Include(fmp => fmp.FootballMatch)
+                .ThenInclude(fm => fm.Creator)
              .Where(fmp => fmp.FootballMatchId == footballMatchId)
              .ToListAsync(cancellationToken);
     }

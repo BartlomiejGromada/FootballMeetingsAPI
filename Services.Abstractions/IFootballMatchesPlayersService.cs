@@ -7,4 +7,5 @@ public interface IFootballMatchesPlayersService
     Task SingUpForMatch(int footballMatchId, int playerId);
     Task SignOffFromMatch(int footballMatchId, int playerId);
     Task ChangeOfPresence(int footballMatchId, List<int> playersIds, JsonPatchDocument dto);
+    Task<(string fileName, byte[] contentFile)> GetReporstFromMatch(int footballMatchId);
 }
