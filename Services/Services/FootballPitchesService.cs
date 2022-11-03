@@ -7,7 +7,7 @@ using Domain.Repositories;
 using Services.Abstractions;
 using Sieve.Models;
 
-namespace Services;
+namespace Services.Services;
 
 public sealed class FootballPitchesService : IFootballPitchesService
 {
@@ -35,14 +35,14 @@ public sealed class FootballPitchesService : IFootballPitchesService
 
     public async Task<FootballPitchDto> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)
     {
-       var footballPitch = await _repositoryManager.FootballPitchesRepository
-            .GetByIdAsync(footballPitchId, cancellationToken);
-    
-       if(footballPitch == null)
+        var footballPitch = await _repositoryManager.FootballPitchesRepository
+             .GetByIdAsync(footballPitchId, cancellationToken);
+
+        if (footballPitch == null)
         {
             throw new NotFoundException($"Football pitch with id {footballPitchId} cannot be found");
         }
-    
+
         return _mapper.Map<FootballPitchDto>(footballPitch);
     }
 
@@ -73,7 +73,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
         var footballPitchDto = await GetByIdAsync(footballPiatchId);
 
         var footballPitchByName = await _repositoryManager.FootballPitchesRepository.GetByNameAsync(dto.Name);
-        if(footballPitchByName != null && footballPitchDto.Id != footballPitchByName.Id)
+        if (footballPitchByName != null && footballPitchDto.Id != footballPitchByName.Id)
         {
             throw new FootballPitchNameIsAlreadyTakenException($"Football pitch with name {dto.Name} is already taken");
         }

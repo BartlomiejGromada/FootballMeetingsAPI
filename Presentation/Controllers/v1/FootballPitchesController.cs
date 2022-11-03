@@ -30,7 +30,7 @@ public class FootballPitchesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<FootballPitchDto>>> GetAll([FromBody] SieveModel query, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<List<FootballPitchDto>>> GetAll([FromQuery] SieveModel query, CancellationToken cancellationToken = default)
     {
         var footballPitches = await _footballPitchesService.GetAllAsync(query, cancellationToken);
 

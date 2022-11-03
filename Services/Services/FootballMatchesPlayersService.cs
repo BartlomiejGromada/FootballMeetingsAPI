@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Services.Abstractions;
 using System.Collections;
 
-namespace Services;
+namespace Services.Services;
 
 public class FootballMatchesPlayersService : IFootballMatchesPlayersService
 {
@@ -132,7 +132,7 @@ public class FootballMatchesPlayersService : IFootballMatchesPlayersService
         Worksheet sheet = workBook.Worksheets[0];
 
         #region Football match info
-        var footballMatchPropertyNames = new ArrayList() { nameof(FootballMatch), nameof(FootballMatch.Date), nameof(FootballMatch.FootballPitch), 
+        var footballMatchPropertyNames = new ArrayList() { nameof(FootballMatch), nameof(FootballMatch.Date), nameof(FootballMatch.FootballPitch),
             nameof(FootballMatch.MaxNumberOfPlayers), nameof(FootballMatch.Creator), nameof(FootballMatch.CreatedAt) };
 
         var items = new ArrayList()
@@ -154,7 +154,7 @@ public class FootballMatchesPlayersService : IFootballMatchesPlayersService
         var playersPropertyNames = new string[] { nameof(User.FirstName), nameof(User.LastName), nameof(User.NickName),
             nameof(FootballMatchPlayer.WasPresent) };
 
-        var playersItems = footballMatch.Select(fmp => new    
+        var playersItems = footballMatch.Select(fmp => new
         {
             fmp.Player.FirstName,
             fmp.Player.LastName,

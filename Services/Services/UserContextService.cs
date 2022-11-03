@@ -2,7 +2,7 @@
 using Services.Abstractions;
 using System.Security.Claims;
 
-namespace Services;
+namespace Services.Services;
 
 public sealed class UserContextService : IUserContextService
 {

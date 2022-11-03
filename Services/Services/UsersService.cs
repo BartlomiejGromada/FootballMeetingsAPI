@@ -4,7 +4,7 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
-namespace Services;
+namespace Services.Services;
 
 public sealed class UsersService : IUsersService
 {

@@ -5,7 +5,7 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using Services.Abstractions;
 
-namespace Services;
+namespace Services.Services;
 
 public class CommentsService : ICommentsService
 {
@@ -66,7 +66,7 @@ public class CommentsService : ICommentsService
         await CheckUserPermissions(footballMatchId);
 
         //If role is "User" then check if comments belongs to specific user
-        if(_userContextService.GetUserRole == "User")
+        if (_userContextService.GetUserRole == "User")
         {
             var isCommentBelongsToUser = await _repositoryManager.CommentsRepository
                 .IsCommentBelongsToUser(commentId, _userContextService.GetUserId);

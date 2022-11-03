@@ -7,7 +7,7 @@ using Domain.Repositories;
 using Services.Abstractions;
 using Sieve.Models;
 
-namespace Services;
+namespace Services.Services;
 
 public sealed class FootballMatchesService : IFootballMatchesService
 {
@@ -106,7 +106,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
             .Where(id => !dto.PlayersIdsToDelete.Contains(id))
             .ToList();
 
-        if (dto.MaxNumberOfPlayers != null && dto.MaxNumberOfPlayers.Value < (footballMatch.Players.Count + (dto.PlayersIds.Count - dto.PlayersIdsToDelete.Count)))
+        if (dto.MaxNumberOfPlayers != null && dto.MaxNumberOfPlayers.Value < footballMatch.Players.Count + (dto.PlayersIds.Count - dto.PlayersIdsToDelete.Count))
         {
             throw new MaximumNumberOfPlayersExceededException($"The maximum number of players has been exceeded");
         }
@@ -115,7 +115,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
         foreach (var playerIdToDelete in dto.PlayersIdsToDelete)
         {
             var playerIsInMatch = footballMatch.Players.Any(player => dto.PlayersIdsToDelete.Contains(player.Id));
-            if(playerIsInMatch)
+            if (playerIsInMatch)
             {
                 await _repositoryManager.FootballMatchesPlayersRepository.SignOffFromMatch(footballMatchId, playerIdToDelete);
             }

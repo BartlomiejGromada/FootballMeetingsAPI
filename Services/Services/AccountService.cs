@@ -12,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Services;
+namespace Services.Services;
 
 public sealed class AccountService : IAccountService
 {
@@ -69,7 +69,7 @@ public sealed class AccountService : IAccountService
             new Claim(ClaimTypes.Role, user.Role.Name),
             new Claim("Nickname", user.NickName),
         };
-        if(user.DateOfBirth != null)
+        if (user.DateOfBirth != null)
         {
             claims.Add(new Claim(JwtRegisteredClaimNames.Birthdate, user.DateOfBirth?.ToString("yyyy-MM-dd")));
         }
@@ -107,8 +107,8 @@ public sealed class AccountService : IAccountService
 
         var verifyPassword = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
         if (_userContextService.GetUserRole != "Admin" &&
-            (_userContextService.GetUserId != user.Id || 
-            (_userContextService.GetUserId == user.Id && verifyPassword == PasswordVerificationResult.Failed))
+            (_userContextService.GetUserId != user.Id ||
+            _userContextService.GetUserId == user.Id && verifyPassword == PasswordVerificationResult.Failed)
            )
         {
             throw new ForbidException();
