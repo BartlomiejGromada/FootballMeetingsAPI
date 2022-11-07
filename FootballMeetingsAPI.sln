@@ -21,11 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "Presentatio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{6F8946AF-5CD0-4A5A-94AF-7E85F089225B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{658A7564-BC1F-4249-83E4-1FA5F26B44A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{658A7564-BC1F-4249-83E4-1FA5F26B44A9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BF55BFE9-8F38-444C-AD46-A480D5D76B14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FootballMeetingsAPITests", "FootballMeetingsAPITests\FootballMeetingsAPITests.csproj", "{E5A8BA7F-29B4-4100-BB6C-6A81210F8C5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FootballMeetingsAPITests", "FootballMeetingsAPITests\FootballMeetingsAPITests.csproj", "{E5A8BA7F-29B4-4100-BB6C-6A81210F8C5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

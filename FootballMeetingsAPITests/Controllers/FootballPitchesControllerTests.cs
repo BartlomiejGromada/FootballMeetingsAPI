@@ -11,7 +11,7 @@ using Sieve.Models;
 using Sieve.Services;
 using System.Collections;
 
-namespace FootballMeetingsAPITests;
+namespace FootballMeetingsAPITests.Controllers;
 
 public class FootballPitchesControllerTests
 {
