@@ -37,6 +37,7 @@ public sealed class AccountService : IAccountService
         var user = _mapper.Map<User>(dto);
         user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
+        user.RoleId = 3;
         await _repositoryManager.AccountsRepository.RegisterUser(user);
 
         await _repositoryManager.UnitOfWork.SaveChangesAsync();
@@ -63,11 +64,11 @@ public sealed class AccountService : IAccountService
         //create claims
         var claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-            new Claim(ClaimTypes.Role, user.Role.Name),
-            new Claim("Nickname", user.NickName),
+            new Claim("id", user.Id.ToString()),
+            new Claim("email", user.Email),
+            new Claim("name", $"{user.FirstName} {user.LastName}"),
+            new Claim("role", user.Role.Name),
+            new Claim("nickname", user.NickName),
         };
         if (user.DateOfBirth != null)
         {

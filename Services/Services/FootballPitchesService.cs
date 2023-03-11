@@ -27,10 +27,7 @@ public sealed class FootballPitchesService : IFootballPitchesService
 
         var dtos = _mapper.Map<List<FootballPitchDto>>(footballPitches);
 
-        var totalCount = await _repositoryManager.FootballPitchesRepository
-            .GetCountAsync(query, cancellationToken);
-
-        return new PagedResult<FootballPitchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
+        return new PagedResult<FootballPitchDto>(dtos, query.PageSize.Value, query.Page.Value);
     }
 
     public async Task<FootballPitchDto> GetByIdAsync(int footballPitchId, CancellationToken cancellationToken = default)

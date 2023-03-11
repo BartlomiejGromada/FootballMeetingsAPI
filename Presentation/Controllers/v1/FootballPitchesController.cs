@@ -1,5 +1,4 @@
-﻿using Contracts.Models;
-using Contracts.Models.FootballPitch;
+﻿using Contracts.Models.FootballPitch;
 using Contracts.Validators;
 using Domain.Exceptions;
 using FluentValidation;

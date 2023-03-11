@@ -29,10 +29,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
 
         var dtos = _mapper.Map<List<FootballMatchDto>>(footballMatches);
 
-        var totalCount = await _repositoryManager.FootballMatchesRepository
-         .GetCountAsync(query, null, cancellationToken);
-
-        return new PagedResult<FootballMatchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
+        return new PagedResult<FootballMatchDto>(dtos, query.PageSize.Value, query.Page.Value);
     }
 
     public async Task<PagedResult<FootballMatchDto>> GetAllByCreatorIdAsync(SieveModel query, int creatorId, CancellationToken cancellationToken = default)
@@ -42,10 +39,7 @@ public sealed class FootballMatchesService : IFootballMatchesService
 
         var dtos = _mapper.Map<List<FootballMatchDto>>(footballMatches);
 
-        var totalCount = await _repositoryManager.FootballMatchesRepository
-         .GetCountAsync(query, creatorId, cancellationToken);
-
-        return new PagedResult<FootballMatchDto>(dtos, totalCount, query.PageSize.Value, query.Page.Value);
+        return new PagedResult<FootballMatchDto>(dtos, query.PageSize.Value, query.Page.Value);
     }
 
     public async Task<FootballMatchDto> GetByIdAsync(int footballMatchId, CancellationToken cancellationToken = default)
