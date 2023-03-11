@@ -3,7 +3,6 @@
 public sealed class PagedResult<T> where T : class
 {
     public List<T> Items { get; }
-    public int TotalItemsCount { get; }
     public bool HasNextPage { get; }
     public bool HasPreviousPage { get; }
 
