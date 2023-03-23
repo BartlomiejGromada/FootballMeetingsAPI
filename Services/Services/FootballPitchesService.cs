@@ -4,6 +4,7 @@ using Contracts.Models.FootballPitch;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 using Services.Abstractions;
 using Sieve.Models;
 
@@ -43,9 +44,17 @@ public sealed class FootballPitchesService : IFootballPitchesService
         return _mapper.Map<FootballPitchDto>(footballPitch);
     }
 
-    public async Task<int> Add(AddFootballPitchDto dto)
+    public async Task<int> Add(AddFootballPitchDto dto, IFormFile? image)
     {
         var footballPitch = _mapper.Map<FootballPitch>(dto);
+
+        if (image != null)
+        {
+            using var memoryStream = new MemoryStream();
+            await image.CopyToAsync(memoryStream);
+            var imageBytes = memoryStream.ToArray();
+            footballPitch.Image = imageBytes;
+        }
 
         await _repositoryManager.FootballPitchesRepository
             .Add(footballPitch);

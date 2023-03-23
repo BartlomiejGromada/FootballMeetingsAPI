@@ -56,14 +56,7 @@ public class FootballPitchesController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        if (image != null)
-        {
-            using var memoryStream = new MemoryStream();
-            await image.CopyToAsync(memoryStream);
-            dto.Image = memoryStream.ToArray();
-        }
-
-        var footballPitchId = await _footballPitchesService.Add(dto);
+        var footballPitchId = await _footballPitchesService.Add(dto, image);
 
         return CreatedAtAction(nameof(GetById), new { footballPitchId }, null);
     }
